@@ -77,4 +77,3 @@ heatmap_goi_coi <- function(
                 fontsize = 5)
   print(p)
 }
-

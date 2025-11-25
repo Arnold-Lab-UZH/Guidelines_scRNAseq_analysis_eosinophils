@@ -1,11 +1,11 @@
-########### This code calculates the gene dropout rate across cell types  ##########
+########## This code analyzes the log normalized MALAT1/Malat1 gene exrpession across cell types  ##########
 ### Datasets used: GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001
 
 ##### Set up environment 
 setwd("/home/khandl")
 
 ##### link to libraries and functions
-source("~/Projects/Technical/1.1.Packages.R")
+source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
 ##### Load R objects 
 In_house_data1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
@@ -20,6 +20,7 @@ Public_data3 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_bm_GSM79190
 Public_data4 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_GSE276583_anno.rds")
 Public_data5 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_liver_GSE216189.rds")
 Public_data6 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_esophagus_duodenum_EoE_GSE175930_anno.rds")
+Public_data7 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_lung_GSE237749_anno.rds")
 
 ##### Remove ? and lowQ and mixed cells 
 Idents(In_house_data1) <- "annotation"
@@ -61,7 +62,10 @@ Public_data5 <- subset(Public_data5, idents = c( "B","Basophils", "DCs","Endothe
 Idents(Public_data6) <- "annotation"
 Public_data6 <- subset(Public_data6, idents = c("T", "Mast","PCs","Macrophages","Epithelial","Eosinophils","Fibroblasts", "B"))
 
-##### For each dataset generate a dataframe that calculates the dropout rate 
+Idents(Public_data7) <- "annotation"
+Public_data7 <- subset(Public_data7, idents = c("B", "Basophils","DCs","Endothelial","Eosinophils","Macrophages","Monocytes","Neutrophils","T"))
+
+##### for each dataset generate a dataframe with the median MALAT1/Malat1 expression 
 ### In_house_data1
 obj <- In_house_data1
 Idents(obj) <- "tissue"
@@ -72,16 +76,16 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
+
   df$tissue <- "colon"
   df$technology <- "BD"
   df$species <- "Hs"
@@ -100,15 +104,14 @@ df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
+ 
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
-  
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "tumor"
@@ -128,15 +131,14 @@ df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
+ 
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
-  
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "blood"
@@ -159,14 +161,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("Malat1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(Malat1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "colon"
@@ -188,14 +189,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("Malat1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(Malat1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "tumor"
@@ -218,14 +218,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("Malat1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(Malat1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "blood"
@@ -246,15 +245,14 @@ df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
+ 
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("Malat1", "annotation"), layer = "data")
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
-  
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(Malat1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "bm"
@@ -275,14 +273,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("Malat1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(Malat1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- i
@@ -304,14 +301,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "blood"
@@ -333,14 +329,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "blood"
@@ -353,35 +348,6 @@ for (i in sample){
 }
 df10 <- bind_rows(df_list)
 
-### Public_data3
-obj <- Public_data3
-obj$sample <- obj$condition
-sample <- (as.data.frame(table(obj$sample)))$Var1
-df_list <- list()
-for (i in sample){
-  Idents(obj) <- "sample"
-  sub <- subset(obj, idents = i)
-  
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
-  
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
-  
-  df$tissue <- "bm"
-  df$technology <- "10X"
-  df$species <- "Mm"
-  df$enrichment <- "Eosinophils"
-  df$sample <- i
-  df$dataset <- "GSM7919060_Mm"
-  df_list[[i]] <- df
-}
-df11 <- bind_rows(df_list)
-
 ### Public_data4
 obj <- Public_data4
 obj$sample <- obj$condition
@@ -391,14 +357,13 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "blood"
@@ -420,14 +385,13 @@ for (i in sample){
   Idents(obj) <- "condition"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("Malat1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(Malat1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "liver"
@@ -449,15 +413,14 @@ df_list <- list()
 for (i in sample){
   Idents(obj) <- "condition"
   sub <- subset(obj, idents = i)
+ 
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
-  
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "duodenum"
@@ -479,14 +442,13 @@ for (i in sample){
   Idents(obj) <- "condition"
   sub <- subset(obj, idents = i)
   
-  counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
+  # Extract MALAT1 expression + metadata
+  dat <- FetchData(sub, vars = c("MALAT1", "annotation"), layer = "data")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
+  # Compute average (or median) expression per annotation
+  df <- dat %>%
+    group_by(annotation) %>%
+    summarise(avg_MALAT1 = median(MALAT1, na.rm = TRUE)) %>%
     as.data.frame()
   
   df$tissue <- "esophagus"
@@ -500,11 +462,11 @@ for (i in sample){
 df15 <- bind_rows(df_list)
 
 #### Combine all dataframes 
-df_list_all <- list(df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11,df12,df13,df14,df15)
+df_list_all <- list(df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df12,df13,df14,df15)
 df <- bind_rows(df_list_all)
 
 ##### Per cell type 
-p <- ggplot(df, aes(x = reorder(celltype, dropout_rate, FUN = median), y =  dropout_rate, fill = celltype)) + 
+p <- ggplot(df, aes(x = reorder(annotation, avg_MALAT1, FUN = median), y =  avg_MALAT1, fill = annotation)) + 
   geom_boxplot(outlier.shape = 16) + 
   theme_minimal() +   
   #geom_point(position = position_dodge(width = 0.75), size = 2.5,shape = 21, fill = "white",colour = "black", alpha = 0.6, stroke = 1.2) + 
@@ -514,9 +476,11 @@ p <- ggplot(df, aes(x = reorder(celltype, dropout_rate, FUN = median), y =  drop
                                 "Hepatocytes"="#EF670A","Kupffer"="#2F5B36", "Macrophages" = "#82C341","Mast" = "#7F7F79", 
                                 "HSCs" = "#EFE9BF","Monocytes" = "#ADD8AB", "Neutrophils" = "#9518ED",  "PCs" = "#B4C108",
                                 "ProMono"="#D2EFD0", "ProNeutro" = "#D9C1E8", "T" = "#5BC7D9",   "TAMs" = "#516D38", "Stellate"="#877864"))
-ggsave("/scratch/khandl/technical/figures/Dropouts/all.svg", width = 20, height = 8, plot = p)
+ggsave("/scratch/khandl/technical/figures/Empty_droplets_by_Malat1/all.svg", width = 20, height = 8, plot = p)
 
-## Statistical test --> one way ANOVA 
-anova <- aov(dropout_rate ~ celltype, data = df)
+## statistical test --> one way ANOVA 
+anova <- aov(avg_MALAT1 ~ annotation, data = df)
 summary(anova)
 TukeyHSD(anova)
+
+

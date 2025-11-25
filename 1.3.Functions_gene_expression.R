@@ -1,4 +1,3 @@
-##### Functions to analyse gene expreession (DEGs, correlation)
 ### Function to do DGE analysis between two conditions and writing the output to a csv file 
 DEG_to_csv_two_cond <- function(
     seurat_object,
@@ -18,6 +17,7 @@ DEG_to_csv_two_cond <- function(
   write.csv(markers, file = csv_file_directory)
 }
 
+## This uses the pseudobulk and DESeq2 approach 
 DEG_two_cond_pb_DESeq2 <- function(
     pseudobulk_object,
     celltype_cond1,

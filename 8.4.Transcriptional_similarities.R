@@ -1,4 +1,5 @@
-########## This code analyzes transcriptional correlation between cell types  ##########
+########### This code analyses transcriptional similarity of eosinophils with other cell types ##########
+### Datasets used: GSM7919060, GSE216189, GSE282765, GSE182001
 
 ##### Set up environment 
 setwd("/home/khandl")

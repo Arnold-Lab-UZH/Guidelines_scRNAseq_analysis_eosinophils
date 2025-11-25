@@ -1,4 +1,4 @@
-### Functions are from decontX package, modified in a way to generate not plots right away but data frames, to the merge differnet 
+### Functions are from decontX package, modified in a way to generate not plots right away but data frames, to the merge different 
 # decontamination assays and to plot the levels of marker expression percentage 
 #https://rdrr.io/bioc/celda/src/R/plot_decontx.R
 

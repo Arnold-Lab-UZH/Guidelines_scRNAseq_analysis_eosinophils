@@ -1,12 +1,13 @@
-########## This code identifies eosinophil specific markers ##########
+########### This code extracts eosinophil specific marker genes across datasets  ##########
+### Datasets used: GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001
 
 ##### Set up environment 
 setwd("/home/khandl")
 
-##### link to libraries and functions
+##### Link to libraries and functions
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
-##### load data and calculate DEGs for eosinophils and EoP
+##### Load data and calculate DEGs for eosinophils and EoP
 ### Hs
 ## NAT/tumor GSE282765 
 obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")

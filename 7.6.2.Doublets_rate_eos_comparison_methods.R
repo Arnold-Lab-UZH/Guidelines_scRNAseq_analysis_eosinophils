@@ -1,13 +1,14 @@
-######### This code compares the mesians of number of features genes of annotated cell types across datasets  ##########
+######### This code compares eosinophils contribution to doubulets by different algorithms ##########
+### Datasets used: GSE282765; Hs CRC NAT and tumor
 
 ##### Set up environment 
 setwd("/home/khandl")
 
-##### link to libraries and functions
+##### Link to libraries and functions
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
-##### compare the percentage of heterotypeic eos, homotypeic eos and other 
-### ground truth from cell hashing 
+##### Compare the percentage of heterotypeic eos, homotypeic eos and other based on prop.est.mvw Eos scores 
+### Cell Hashing 
 df <- read.csv("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_deconvolution_result.csv")
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
@@ -17,7 +18,7 @@ df_h5 <- df[grepl("^h5_", df$X), ]
 df_h6 <- df[grepl("^h6_", df$X), ]
 df_h7 <- df[grepl("^h7_", df$X), ]
 
-### how many cells per sample haver larger 25 and lower 75 = doublets 
+### Define percentage of different groups from all experiments 
 all_h1 <- length(rownames(df_h1))
 doublets_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.25 & df_h1$Eosinophils <= 0.75 ,]))
 homo_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.75  ,]))
@@ -109,7 +110,7 @@ df <- rbind(df,h5_df)
 df <- rbind(df,h6_df)
 df_cell_hashing <- rbind(df,h7_df)
 
-### upper Feature 
+### Based on genene counts 
 df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result.csv")
 
 df_h1 <- df[grepl("^h1_", df$X), ]
@@ -120,7 +121,6 @@ df_h5 <- df[grepl("^h5_", df$X), ]
 df_h6 <- df[grepl("^h6_", df$X), ]
 df_h7 <- df[grepl("^h7_", df$X), ]
 
-### how many cells per sample haver larger 25 and lower 75 = doublets 
 all_h1 <- length(rownames(df_h1))
 doublets_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.25 & df_h1$Eosinophils <= 0.75 ,]))
 homo_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.75  ,]))
@@ -212,7 +212,7 @@ df <- rbind(df,h5_df)
 df <- rbind(df,h6_df)
 df_upper_feature <- rbind(df,h7_df)
 
-### scDblFinder without reference 
+### Based on scDblFinder
 df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result0025.csv")
 
 df_h1 <- df[grepl("^h1_", df$X), ]
@@ -223,7 +223,6 @@ df_h5 <- df[grepl("^h5_", df$X), ]
 df_h6 <- df[grepl("^h6_", df$X), ]
 df_h7 <- df[grepl("^h7_", df$X), ]
 
-### how many cells per sample haver larger 25 and lower 75 = doublets 
 all_h1 <- length(rownames(df_h1))
 doublets_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.25 & df_h1$Eosinophils <= 0.75 ,]))
 homo_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.75  ,]))
@@ -315,8 +314,8 @@ df <- rbind(df,h5_df)
 df <- rbind(df,h6_df)
 df_scDblFinder <- rbind(df,h7_df)
 
-### DoubletFinder without reference 
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result.csv")
+### Based on DoubletFinder
+df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result2.csv")
 
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
@@ -326,7 +325,6 @@ df_h5 <- df[grepl("^h5_", df$X), ]
 df_h6 <- df[grepl("^h6_", df$X), ]
 df_h7 <- df[grepl("^h7_", df$X), ]
 
-### how many cells per sample haver larger 25 and lower 75 = doublets 
 all_h1 <- length(rownames(df_h1))
 doublets_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.25 & df_h1$Eosinophils <= 0.75 ,]))
 homo_h1 <- length(rownames(df_h1[df_h1$Eosinophils >0.75  ,]))
@@ -418,7 +416,7 @@ df <- rbind(df,h5_df)
 df <- rbind(df,h6_df)
 df_DoubletFinder <- rbind(df,h7_df)
 
-### merge all and plot 
+### Merge all data frames 
 df_cell_hashing$method <- "cell_hashing"
 df_upper_feature$method <- "upper_gene_cutoff"
 df_scDblFinder$method <- "scDblFinder"
@@ -435,6 +433,26 @@ p <- ggplot(df, aes(x = identity, y =  values, fill = method)) +
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylim(0,100) +
   scale_fill_manual(values =  c( "cell_hashing" = "#BF4BEF", "scDblFinder" = "#0FD367","upper_gene_cutoff" = "#175ABC","DoubletFinder"="#EDE60A"))
-ggsave("/scratch/khandl/technical/figures/Doublet/Eos_score_doublets.svg", width = 20, height = 8, plot = p)
+ggsave("/scratch/khandl/technical/figures/Doublet/Eos_score_doublets.svg", width = 23, height = 8, plot = p)
 
+##### Run statistical analysis for each group 
+### Heterotypic 0.25-0.75
+a <- df[df$identity %in% "doublets",]
+## statistical test --> one way ANOVA 
+anova <- aov(values ~ method, data = a)
+summary(anova)
+TukeyHSD(anova)
 
+### Homotypic > 0.75
+a <- df[df$identity %in% "homo",]
+## statistical test --> one way ANOVA 
+anova <- aov(values ~ method, data = a)
+summary(anova)
+TukeyHSD(anova)
+
+### Other < 0.25
+a <- df[df$identity %in% "other",]
+## statistical test --> one way ANOVA 
+anova <- aov(values ~ method, data = a)
+summary(anova)
+TukeyHSD(anova)

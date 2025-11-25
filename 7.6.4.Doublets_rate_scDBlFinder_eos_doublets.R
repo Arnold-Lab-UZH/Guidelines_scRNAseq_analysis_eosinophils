@@ -1,15 +1,16 @@
-######### This code compares the mesians of number of features genes of annotated cell types across datasets  ##########
+######### This code analyzes eosinophil contributing doublets based on position in UMAP and marker gene expression from scDBlFinder output ##########
+### Datasets used: GSE282765; Hs CRC NAT and tumor
 
 ##### Set up environment 
 setwd("/home/khandl")
 
-##### link to libraries and functions
+##### Link to libraries and functions
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
-##### load seurat objects 
+##### Load seurat objects 
 obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
 
-##### add doublet/singlet condition
+##### Add doublet/singlet condition
 scDblFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result0025.csv")
 doublet_cell_ids <- scDblFinder_df$X
 all_bcs <- rownames(obj@meta.data)
@@ -29,7 +30,7 @@ obj@meta.data <- obj@meta.data %>%
 table(obj$doublet_cond)
 DimPlot(obj, group.by = "doublet_cond", label = TRUE)
 
-### highlight eos_hetero and eos_homo
+### Highlight hetero and homotypic doublets 
 Idents(obj) <- "doublet_cond"
 eos_homo <- WhichCells(obj, idents = c("Eos_homo"))
 eos_hetero <- WhichCells(obj, idents = c("Eos_hetero"))
@@ -37,7 +38,7 @@ p <- DimPlot(obj, label=T, group.by="doublet_cond", cells.highlight= list(eos_ho
         cols.highlight = c( "#270CEF","#EFA40F"), cols= "#A39F9F",raster = FALSE)
 ggsave("/scratch/khandl/technical/figures/Doublet/UMAP_hetero_homo_doublets_eos.svg", width = 8, height = 8, plot = p)
 
-##### Eos doublets marker genes 
+##### Marker gene expression in eos doublets 
 Idents(obj) <- "doublet_cond"
 sub <- subset(obj, idents = c("Eos_hetero","Eos_homo","Doublet"))
 

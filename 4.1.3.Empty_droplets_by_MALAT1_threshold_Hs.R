@@ -46,7 +46,7 @@ df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MA
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
 
 ## Identify cell barcodes from NAT and tuomr 
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp1_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "contol",])$Cell_Index
 
@@ -72,7 +72,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp2_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -93,7 +93,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp3_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -114,7 +114,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp4_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -135,7 +135,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp5_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -156,7 +156,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp6_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_control",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -177,7 +177,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp7_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]

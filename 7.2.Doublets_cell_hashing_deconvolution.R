@@ -10,13 +10,13 @@ source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat
 
 ##### Extract multiplets from Unfiltered matrices based on Sample Tag Calls 
 ### Load Sample Tag Calls and extract Multiplets Cell IDs 
-P1 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp1_Sample_Tag_Calls.csv",skip = 7)
-P2 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp2_Sample_Tag_Calls.csv",skip = 7)
-P3 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp3_Sample_Tag_Calls.csv",skip = 7)
-P4 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp4_Sample_Tag_Calls.csv",skip = 7)
-P5 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp5_Sample_Tag_Calls.csv",skip = 7)
-P6 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp6_Sample_Tag_Calls.csv",skip = 7)
-P7 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp7_Sample_Tag_Calls.csv",skip = 7)
+P1 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
+P2 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
+P3 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
+P4 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
+P5 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
+P6 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
+P7 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
 
 P1 <- P1[P1$Sample_Tag %in% "Multiplet",]$Cell_Index
 P2 <- P2[P2$Sample_Tag %in% "Multiplet",]$Cell_Index

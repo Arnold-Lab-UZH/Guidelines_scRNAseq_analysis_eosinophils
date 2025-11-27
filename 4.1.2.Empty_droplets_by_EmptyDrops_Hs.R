@@ -20,7 +20,7 @@ df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
 
 ## Assign cell barcodes based on Sample Tag Calls
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp1_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "contol",])$Cell_Index
 
@@ -43,7 +43,7 @@ df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp2_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -61,7 +61,7 @@ df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp3_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -79,7 +79,7 @@ df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp4_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -97,7 +97,7 @@ df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp5_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -115,7 +115,7 @@ df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp6_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_control",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -133,7 +133,7 @@ df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_exp7_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]

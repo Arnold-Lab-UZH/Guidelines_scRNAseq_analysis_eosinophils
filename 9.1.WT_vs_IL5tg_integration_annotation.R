@@ -15,11 +15,11 @@ wt_colon <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT
 
 ### Extract BM and colon 
 Idents(wt_bm) <- "condition"
-wt_bm <- subset(wt_bm, idents =c("bm_wt") )
+wt_bm <- subset(wt_bm, idents =c("bm_wt","blood_wt") )
 Idents(wt_colon) <- "condition"
 wt_colon <- subset(wt_colon, idents =c("adult_colon_wt") )
 Idents(il5tg) <- "condition"
-il5tg <- subset(il5tg, idents =c("bm","colon") )
+il5tg <- subset(il5tg, idents =c("bm","colon","blood","spleen") )
 
 ### Extract Eosinophils and EoP
 Idents(wt_bm) <- "annotation"
@@ -32,6 +32,8 @@ il5tg <- subset(il5tg, idents = c("Eosinophils","EoP"))
 obj <- merge(wt_bm, y= c(wt_colon,il5tg))
 DefaultAssay(obj) <- "RNA"
 obj <- JoinLayers(obj)
+
+saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Il5tg_wt_eos.rds" )
 
 current.cluster.ids <- c("adult_colon_wt","bm","bm_wt","colon")
 new.cluster.ids <- c("wt","il5tg","wt","il5tg")
@@ -83,8 +85,8 @@ ggsave("/scratch/khandl/technical/figures/wt_il5tg/umap_split_genotype_group_tis
 ### DotPlot of marker genes
 goi <- c("Mki67","Tuba1b", "Epx","Prg3", #progenitor
          "Ear1","Ear2","Alox15","Cebpe", # immature 
-         "Aldh2","S100a6","Retnla","Ccl9","Il1rl1","Cd24a", # circulating 
-         "Mmp9","Icosl","Il4","Tgfb1","Pirb","Rara", # basal 
+         #"Aldh2","S100a6","Retnla","Ccl9","Il1rl1","Cd24a", # circulating 
+         "Mmp9","Icosl","Il4","Tgfb1","Pirb","Rara","Krt80","Tmem71","Lcp2","Sell","Il17ra", # basal 
          "Cd80","Cd274","Ptgs2","Il1rn","Il1b","Vegfa" # active 
 )
 Idents(obj) <- "mnn.clusters"
@@ -98,6 +100,13 @@ new.cluster.ids <- c("active","active","active","active" ,"active","precursor","
 obj$annotation <- plyr::mapvalues(x = obj$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
 DimPlot(obj, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn", split.by = "tissue")
 obj_save <- obj
+
+### DEGs per annotation cluster 
+obj <- JoinLayers(obj)
+obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+Idents(obj) <- "annotation"
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+View(markers %>% group_by(cluster) %>% top_n(n =20, wt = avg_log2FC))
 
 obj$anno_cond <- paste0(obj$annotation, "_",obj$genotype)
 

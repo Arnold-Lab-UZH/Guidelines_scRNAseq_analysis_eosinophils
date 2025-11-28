@@ -85,5 +85,6 @@
 **9. Comparison of eosinophils from Il5-tg and wild type BM and colon** 
   - 9.1.WT_vs_IL5tg_integration_annotation.R: Integration and annotation of BM and colon eosinophils from il5-tg and wt; data from GSE282765, GSE182001; 
   - 9.2.WT_vs_IL5tg_DEGs.R: DEG analysis between il5-tg and wt of eosinophils from colon and BM; data from GSE282765, GSE182001; 
-  - 9.3.WT_vs_IL5tg_pseudotime.R: Slingshot pseudotime trajectory analysis comparing the development of eosinophils from BM to the colon between genotpyes; data from GSE282765, GSE182001; 
+  - 9.3.WT_vs_IL5tg_pseudotime.R: Slingshot pseudotime trajectory analysis comparing the development of eosinophils from BM to the colon between genotpyes; data from GSE282765, GSE182001;
+  - 9.4.WT_vs_IL5tg_granulogenesis_antimicrobial_peptide_score.R: Analysis of a granulogenesis and antimicrobial peptide score from BM; data from GSE282765, GSE182001;
   

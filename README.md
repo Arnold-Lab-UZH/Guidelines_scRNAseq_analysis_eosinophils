@@ -31,17 +31,13 @@
   - 3.1.Gene_counts_across_cell_types.R: Calculating and plotting of median number of genes per annotated cell type across all datasets, data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
   - 3.2.Gene_counts_across_eos_subtypes.R: Calculating and plotting of median number of genes per annotated eosinophil subtypes data from GSE182001; 
   
-**4. Empty droplets/wells detection** 
-  - 4.1.1.Empty_doplets_by_BD_pipeline_Hs.R: Annotation of cells from BD automatic pipeline based on BD forced annotation, data from GSE282765; Hs CRC NAT and tumor, 7 each;
-  - 4.1.2.Empty_droplets_by_EmptyDrops_Hs.R: Running of EmptyDrops algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Hs CRC NAT and tumor, 7 each;
-  - 4.1.3.Empty_droplets_by_MALAT1_threshold_Hs.R: Running of MALAT1 threshold algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Hs CRC NAT and tumor, 7 each;
-  - 4.1.5.Empty_doplets_QC_across_aporoaches_Hs.R: Assessment of the quality of additional eosinophils from BD forced, EmtpyDrops and MALAT1 threshold;  data from GSE282765; Hs CRC NAT and tumor, 7 each;
-  - 4.2.1.Malat1_expression_acrosss_datasets.R: Analysis of the mean log normalized expression of MALAT1/Malat1 across cell types, data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001
-  - 4.3.1.Empty_doplets_by_BD_pipeline_Mm.R: Annotation of cells from BD automatic pipeline based on BD forced annotation, data from GSE282765; Mm BM and blood from healthy and CRC, 1 each; 
-  - 4.3.2.Empty_droplets_by_EmptyDrops_Mm.R: Running of EmptyDrops algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Mm BM and blood from healthy and CRC, 1 each; 
-  - 4.3.3.Empty_droplets_by_Malat1_threshold_Mm.R: Running of MALAT1 threshold algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Mm BM and blood from healthy and CRC, 1 each;
-  - 4.3.4.Empty_doplets_n_cells_across_approaches_Mm.R: Assessment of the quality of additional eosinophils from BD forced, EmtpyDrops and MALAT1 threshold; data from GSE282765; Mm BM and blood from healthy and CRC, 1 each; 
- 
+**4. Gene dropout rates and marker gene expression in eosinophils** 
+  - 4.1.Dropout_rate_per_cell_type.R: Calulation of the gene dropout rate across cell types; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
+  - 4.2.ALRA_zero_imputation.R: Application of ALRA zero imputation and analysing the consequences of that; data from GSE182001; 
+  - 4.3.Eosinophil_marker_across_datasets.R: Extracting eosinophils specific marker genes from different datasets and tissues; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
+  - 4.4.Transcriptional_similarities.R: Analysing the transcriptional simiarity of eosinopihl to other cell types using Pearson correlation; data from GSM7919060, GSE216189, GSE282765, GSE182001; 
+  - 4.5.Eos_neutro_baso_mast_cell_marker.R: Analysing marker gene expression from eosinophils, neutrophils, mast cells and basophils 
+
 **5. Gene mapping to intronic and exonic reads or exonic reads only** 
   - 5.1.1.Exons_only_annotation_Hs_tumor_NAT_GSE282765.R: Annotation of BD forced mapping to exonic reads only, data from GSE282765; Hs tumor and NAT, 7 each; 
   - 5.1.2.Exons_only_annotation_Hs_PB_GSE282765.R: Annotation of BD forced mapping to exonic reads only, data from GSE282765; Hs PB healthy (9) and CRC (7); 
@@ -51,36 +47,40 @@
   - 5.2.1.With_and_without_intronic_reads_nFeatures.R: Comparison of gene counts across cell types between gene mapping strategies, data from GSE282765 and GSE182001; 
   - 5.2.2.With_and_without_intronic_reads_DEGs_Mm.R: DEG analysis between both mapping strategies across eosinophil subtypes in il5-tg Mm dataset, data from GSE182001; 
   - 5.2.3.With_and_without_intronic_reads_DEGs_Hs.R: DEG analysis between both mapping strategies in Hs healthy PB, data from GSE282765; 
+
+**6. Empty wells detection** 
+  - 6.1.1.Empty_doplets_by_BD_pipeline_Hs.R: Annotation of cells from BD automatic pipeline based on BD forced annotation, data from GSE282765; Hs CRC NAT and tumor, 7 each;
+  - 6.1.2.Empty_droplets_by_EmptyDrops_Hs.R: Running of EmptyDrops algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Hs CRC NAT and tumor, 7 each;
+  - 6.1.3.Empty_droplets_by_MALAT1_threshold_Hs.R: Running of MALAT1 threshold algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Hs CRC NAT and tumor, 7 each;
+  - 6.1.5.Empty_doplets_QC_across_aporoaches_Hs.R: Assessment of the quality of additional eosinophils from BD forced, EmtpyDrops and MALAT1 threshold;  data from GSE282765; Hs CRC NAT and tumor, 7 each;
+  - 6.2.Malat1_expression_acrosss_datasets.R: Analysis of the mean log normalized expression of MALAT1/Malat1 across cell types, data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001
+  - 6.3.1.Empty_doplets_by_BD_pipeline_Mm.R: Annotation of cells from BD automatic pipeline based on BD forced annotation, data from GSE282765; Mm BM and blood from healthy and CRC, 1 each; 
+  - 6.3.2.Empty_droplets_by_EmptyDrops_Mm.R: Running of EmptyDrops algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Mm BM and blood from healthy and CRC, 1 each; 
+  - 6.3.3.Empty_droplets_by_Malat1_threshold_Mm.R: Running of MALAT1 threshold algorithm and annotation of resulting cells based on BD forced annotation, data from GSE282765; Mm BM and blood from healthy and CRC, 1 each;
+  - 6.3.4.Empty_doplets_n_cells_across_approaches_Mm.R: Assessment of the quality of additional eosinophils from BD forced, EmtpyDrops and MALAT1 threshold; data from GSE282765; Mm BM and blood from healthy and CRC, 1 each; 
+ 
+**7. Ambient RNA detection and correction** 
+  - 7.1.Ambient_RNA_quantification.R: Quantification of ambient RNA based on IGKC/Igkc expression; data from GSE282765; Hs NAT and tumor, 7 each; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
+  - 7.2.1.Ambient_RNA_scCDC_quant_decont_Mm.R: Quantification of ambient RNA and decontamination of count matrix using the scCDC workflow; data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
+  - 7.2.2.Ambient_RNA_DecontX_quant_decont_Mm.R: Quantification of ambient RNA and decontamination of count matrix using the DecontX workflow; data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
+  - 7.2.3.Ambient_RNA_SoupX_quant_decont_Mm.R: Quantification of ambient RNA and decontamination of count matrix using the SoupX workflow; data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
+  - 7.2.4.Ambient_RNA_decont_cell_type_marker_expr_comp_Mm.R: Comparison of cell type marker detection between decontamination tools, data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
+  - 7.2.5.Ambient_RNA_decont_DEGs_comp_Mm.R: Comparison of DEGs between two condition between decontamination tools, data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
+  - 7.3.1.Ambient_RNA_sCDC_quant_Hs.R: Quantification of ambient RNA using the scCDC workflow; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 7.3.2.Ambient_RNA_DecontX_quant_Hs.R: Quantification of ambient RNA using the DecontX workflow; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 7.3.3.Ambient_RNA_SoupX__quant_Hs.R: Quantification of ambient RNA using the SoupX workflow; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 7.4.Ambient_RNA_quantification_plotting_Hs_Mm.R: Plotting of quantified contamination summarising all three tools and all datasets, data from GSE282765; Hs NAT and tumor, 7 each; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
   
-**6. Ambient RNA detection and decontamination** 
-  - 6.1.1.Ambient_RNA_quantification.R: Quantification of ambient RNA based on IGKC/Igkc expression; data from GSE282765; Hs NAT and tumor, 7 each; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  - 6.2.1.Ambient_RNA_scCDC_quant_decont_Mm.R: Quantification of ambient RNA and decontamination of count matrix using the scCDC workflow; data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  - 6.2.2.Ambient_RNA_DecontX_quant_decont_Mm.R: Quantification of ambient RNA and decontamination of count matrix using the DecontX workflow; data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  - 6.2.3.Ambient_RNA_SoupX_quant_decont_Mm.R: Quantification of ambient RNA and decontamination of count matrix using the SoupX workflow; data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  - 6.2.4.Ambient_RNA_decont_cell_type_marker_expr_comp_Mm.R: Comparison of cell type marker detection between decontamination tools, data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  - 6.2.5.Ambient_RNA_decont_DEGs_comp_Mm.R: Comparison of DEGs between two condition between decontamination tools, data from GSE282765; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  - 6.3.1.Ambient_RNA_sCDC_quant_Hs.R: Quantification of ambient RNA using the scCDC workflow; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 6.3.2.Ambient_RNA_DecontX_quant_Hs.R: Quantification of ambient RNA using the DecontX workflow; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 6.3.3.Ambient_RNA_SoupX__quant_Hs.R: Quantification of ambient RNA using the SoupX workflow; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 6.4.1.Ambient_RNA_quantification_plotting_Hs_Mm.R: Plotting of quantified contamination summarising all three tools and all datasets, data from GSE282765; Hs NAT and tumor, 7 each; Mm colon healthy, tumor, NAT and dissemianted, 1 each;
-  
-**7. Doublet detection** 
-  - 7.1.Doublet_rate_cell_hashing.R: Doublet rate calculation using sample tag cell hashing calls; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.2.Doublets_cell_hashing_deconvolution.R: Deconvolution of doublets with SCDC; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.3.Doublet_detection_based_on_gene_counts.R: Doublet identification and quantification based on gene coutns; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.4.Doublet_detection_scDblFinder.R: Doublet identification and quantification based on scDblFinder; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.5.Doublet_detection_DoubletFinder.R: Doublet identification and quantification based on DoubletFinder; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.6.1.Doublets_rate_comparison_methods.R: Comparison of doublet rate across differnet algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.6.2.Doublets_rate_eos_comparison_methods.R: Comparison of percentage of eosinophil contribution within doublets across different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.6.3.Doublets_rate_SCDC_scores_across_methods.R: Comparison of SCDC deconvolution scores from eosinophils, neutrophils and macrophages in doublets from different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 7.6.4.Doublets_rate_scDBlFinder_eos_doublets.R: Analysis of eosinophil contributing doublets from scDblFinder based on location in UMAP clustering and marker gene expression; data from GSE282765; Hs NAT and tumor, 7 each; 
-  
-**8. Gene dropout rates and marker gene expression in eosinophils** 
-  - 8.1.Dropout_rate_per_cell_type.R: Calulation of the gene dropout rate across cell types; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
-  - 8.2.ALRA_zero_imputation.R: Application of ALRA zero imputation and analysing the consequences of that; data from GSE182001; 
-  - 8.3.Eosinophil_marker_across_datasets.R: Extracting eosinophils specific marker genes from different datasets and tissues; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
-  - 8.4.Transcriptional_similarities.R: Analysing the transcriptional simiarity of eosinopihl to other cell types using Pearson correlation; data from GSM7919060, GSE216189, GSE282765, GSE182001; 
-  - 8.5.Eos_neutro_baso_mast_cell_marker.R: Analysing marker gene expression from eosinophils, neutrophils, mast cells and basophils 
+**8. Doublet detection** 
+  - 8.1.Doublet_rate_cell_hashing.R: Doublet rate calculation using sample tag cell hashing calls; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.2.Doublets_cell_hashing_deconvolution.R: Deconvolution of doublets with SCDC; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.3.Doublet_detection_based_on_gene_counts.R: Doublet identification and quantification based on gene coutns; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.4.Doublet_detection_scDblFinder.R: Doublet identification and quantification based on scDblFinder; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.5.Doublet_detection_DoubletFinder.R: Doublet identification and quantification based on DoubletFinder; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.6.1.Doublets_rate_comparison_methods.R: Comparison of doublet rate across differnet algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.6.2.Doublets_rate_eos_comparison_methods.R: Comparison of percentage of eosinophil contribution within doublets across different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.6.3.Doublets_rate_SCDC_scores_across_methods.R: Comparison of SCDC deconvolution scores from eosinophils, neutrophils and macrophages in doublets from different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.6.4.Doublets_rate_scDBlFinder_eos_doublets.R: Analysis of eosinophil contributing doublets from scDblFinder based on location in UMAP clustering and marker gene expression; data from GSE282765; Hs NAT and tumor, 7 each; 
   
 **9. Comparison of eosinophils from Il5-tg and wild type BM and colon** 
   - 9.1.WT_vs_IL5tg_integration_annotation.R: Integration and annotation of BM and colon eosinophils from il5-tg and wt; data from GSE282765, GSE182001; 

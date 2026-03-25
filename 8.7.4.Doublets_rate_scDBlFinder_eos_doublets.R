@@ -8,10 +8,10 @@ setwd("/home/khandl")
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
 ##### Load seurat objects 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
 
 ##### Add doublet/singlet condition
-scDblFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result0025.csv")
+scDblFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
 doublet_cell_ids <- scDblFinder_df$X
 all_bcs <- rownames(obj@meta.data)
 singlet_cell_ids <- all_bcs[!all_bcs %in% doublet_cell_ids]
@@ -45,4 +45,3 @@ sub <- subset(obj, idents = c("Eos_hetero","Eos_homo","Doublet"))
 p <- DotPlot(sub, features = c("CLC","CCR3","ALOX15","ADGRE1","DACH1", "CD3E","ICOS","CD4", "C1QC","C1QB","VCAN","FN1","FCGR3B"),dot.scale = 15, scale = FALSE, assay = "RNA",cols = c("white","darkred")) + 
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + theme(axis.text.x = element_text(angle = 90)) 
 ggsave("/scratch/khandl/technical/figures/Doublet/Eos_scDblFinder_homo_hetero.svg", width = 10, height = 6, plot = p)
-

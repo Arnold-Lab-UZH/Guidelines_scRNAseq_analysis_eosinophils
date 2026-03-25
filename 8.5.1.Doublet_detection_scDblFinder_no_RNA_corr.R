@@ -8,13 +8,13 @@ setwd("/home/khandl")
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
 ##### Load annotated data 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds")
 
 ##### Run scDblFinder  
 set.seed(100)
 sce <- as.SingleCellExperiment(obj)
 colData(sce)
-sce <- scDblFinder(sce, clusters="annotation", sample = "experiment", dbr = 0.025)
+sce <- scDblFinder(sce, clusters="annotation", sample = "experiment", dbr = 0.075)
 table(truth=sce$annotation, call=sce$scDblFinder.class)
 
 ## Add the scDblFinder.score and scDblFinder.class to Seurat object 
@@ -29,9 +29,11 @@ obj <- AddMetaData(obj, metadata = df_dbl[, c("scDblFinder.class", "scDblFinder.
 ### Plot scDblFinder score 
 Idents(obj) <- "annotation"
 sub <- subset(obj, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial","Fibroblasts","Macrophages","Mast","Monocytes","Neutrophils","PCs","T","TAMs"))
+Idents(sub) <- "experiment"
+sub <- subset(sub, idents = "Exp2")
 
-p <- FeaturePlot(obj, features = "scDblFinder.score", reduction = "umap.mnn", cols = brewer.pal(n = 9, name = "YlOrRd") )  # gradient from low -> mid -> high )
-ggsave("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_umap0025.svg", width = 8, height = 8, plot = p)
+p <- FeaturePlot(sub, features = "scDblFinder.score", reduction = "umap.mnn", cols = brewer.pal(n = 9, name = "YlOrRd") )  # gradient from low -> mid -> high )
+ggsave("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_umap008.svg", width = 8, height = 8, plot = p)
 
 ##### Calculate percentage of doublet rate 
 experimet_ids <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
@@ -47,10 +49,10 @@ for (i in experimet_ids) {
 }
 
 sample <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
-multiplet_rate_per_sample <- c(6.509209,6.554307,5.985603,5.612413,6.022134,6.210536,6.347697)
+multiplet_rate_per_sample <- c(12.45844,13.13433,11.30402,11.61229,11.95877,11.91025,11.72843)
 df <- data.frame(sample, multiplet_rate_per_sample)
 df$method <- "scDblFinder"
-write.csv(df,"/scratch/khandl/technical/figures/Doublet/scDblFinder_doublet_rate0025.csv")
+write.csv(df,"/scratch/khandl/technical/figures/Doublet/scDblFinder_doublet_rate075_no_corr.csv")
 
 ##### Extract doublets and deconvolute 
 Idents(obj) <- "scDblFinder.class"
@@ -115,7 +117,13 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
 
 ### Save deconvolution results 
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result0025.csv")
+write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_no_corr.csv")
 
 ##### Save Seurat object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated_scDblFinder0025.rds")
+saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated_scDblFinder075.rds")
+
+
+
+
+
+

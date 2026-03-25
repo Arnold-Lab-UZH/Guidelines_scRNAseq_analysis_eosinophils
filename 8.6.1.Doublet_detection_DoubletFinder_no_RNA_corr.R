@@ -8,7 +8,7 @@ setwd("/home/khandl")
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
 ##### Load annotated data 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds")
 
 ##### Run for each experiment separately 
 ### Exp1 
@@ -20,7 +20,7 @@ sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
 sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
 bcmvn <- find.pK(sweep.stats)
 optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
-print(optimal_pK) #0.26
+print(optimal_pK) #0.19
 
 ## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
 homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
@@ -28,80 +28,14 @@ nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))
 nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
 ## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
-sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.25, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.25_2090
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.25_2090
+sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.19, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
+sub$DoubletFinder_score <- sub$pANN_0.25_0.19_2439
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.19_2439
 sub_exp1 <- sub
 
 ### Exp2 
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp2")
-
-### identify pk 
-sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
-sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
-bcmvn <- find.pK(sweep.stats)
-optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
-print(optimal_pK) #0.28
-
-## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
-homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
-nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))  
-nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
-
-## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
-sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.28, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.28_2104
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.28_2104
-sub_exp2 <- sub
-
-### Exp3
-Idents(obj) <- "experiment"
-sub <- subset(obj, idents = "Exp3")
-
-### identify pk 
-sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
-sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
-bcmvn <- find.pK(sweep.stats)
-optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
-print(optimal_pK) #0.07
-
-## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
-homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
-nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))  
-nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
-
-## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
-sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.07, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.07_1516
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.07_1516
-sub_exp3 <- sub
-
-### Exp4
-Idents(obj) <- "experiment"
-sub <- subset(obj, idents = "Exp4")
-
-### identify pk 
-sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
-sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
-bcmvn <- find.pK(sweep.stats)
-optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
-print(optimal_pK) #0.005
-
-## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
-homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
-nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))  
-nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
-
-## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
-sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.005, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.005_1088
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.005_1088
-sub_exp4<- sub
-
-### Exp5
-Idents(obj) <- "experiment"
-sub <- subset(obj, idents = "Exp5")
 
 ### identify pk 
 sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
@@ -117,8 +51,74 @@ nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
 ## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
 sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.29, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.29_2425
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.29_2425
+sub$DoubletFinder_score <- sub$pANN_0.25_0.29_2398
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.29_2398
+sub_exp2 <- sub
+
+### Exp3
+Idents(obj) <- "experiment"
+sub <- subset(obj, idents = "Exp3")
+
+### identify pk 
+sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
+sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
+bcmvn <- find.pK(sweep.stats)
+optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
+print(optimal_pK) #0.19
+
+## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
+homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
+nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))  
+nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
+
+## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
+sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.19, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
+sub$DoubletFinder_score <- sub$pANN_0.25_0.19_2232
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.19_2232
+sub_exp3 <- sub
+
+### Exp4
+Idents(obj) <- "experiment"
+sub <- subset(obj, idents = "Exp4")
+
+### identify pk 
+sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
+sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
+bcmvn <- find.pK(sweep.stats)
+optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
+print(optimal_pK) #0.001
+
+## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
+homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
+nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))  
+nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
+
+## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
+sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.001, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
+sub$DoubletFinder_score <- sub$pANN_0.25_0.001_1163
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.001_1163
+sub_exp4<- sub
+
+### Exp5
+Idents(obj) <- "experiment"
+sub <- subset(obj, idents = "Exp5")
+
+### identify pk 
+sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
+sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
+bcmvn <- find.pK(sweep.stats)
+optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
+print(optimal_pK) #0.13
+
+## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
+homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
+nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))  
+nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
+
+## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
+sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.13, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
+sub$DoubletFinder_score <- sub$pANN_0.25_0.13_2298
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.13_2298
 sub_exp5 <- sub
 
 ### Exp7
@@ -130,7 +130,7 @@ sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
 sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
 bcmvn <- find.pK(sweep.stats)
 optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
-print(optimal_pK) #0.23
+print(optimal_pK) #0.24
 
 ## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
 homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
@@ -138,9 +138,9 @@ nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))
 nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
 ## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
-sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.23, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.23_2144
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.23_2144
+sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.24, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
+sub$DoubletFinder_score <- sub$pANN_0.25_0.24_3193
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.24_3193
 sub_exp7 <- sub
 
 ### Exp8
@@ -152,7 +152,7 @@ sweep.res.list <- paramSweep(sub, PCs = 1:10, sct = FALSE)
 sweep.stats <- summarizeSweep(sweep.res.list, GT = FALSE)
 bcmvn <- find.pK(sweep.stats)
 optimal_pK <- bcmvn$pK[which.max(bcmvn$BCmetric)]
-print(optimal_pK) #0.25
+print(optimal_pK) #0.15
 
 ## Homotypic Doublet Proportion Estimate -------------------------------------------------------------------------------------
 homotypic.prop <- modelHomotypic(sub$annotation)           ## ex: annotations <- seu_kidney@meta.data$ClusteringResults
@@ -160,9 +160,9 @@ nExp_poi <- round(homotypic.prop*nrow(sub@meta.data))
 nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
 ## Run DoubletFinder with varying classification stringencies ----------------------------------------------------------------
-sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.2, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
-sub$DoubletFinder_score <- sub$pANN_0.25_0.2_2805
-sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.2_2805
+sub <- doubletFinder(sub, PCs = 1:10, pN = 0.25, pK = 0.15, nExp = nExp_poi.adj, reuse.pANN = NULL, sct = FALSE)
+sub$DoubletFinder_score <- sub$pANN_0.25_0.15_3427
+sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.15_3427
 sub_exp8 <- sub
 
 ### merge all 
@@ -186,7 +186,11 @@ obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = 
 DimPlot(obj,reduction = "umap.mnn",group.by = "annotation",raster=TRUE, label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
-p <- FeaturePlot(obj, features = "DoubletFinder_score", reduction = "umap.mnn",cols = c("white","darkred") )
+Idents(obj) <- "annotation"
+sub <- subset(obj, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial","Fibroblasts","Macrophages","Mast","Monocytes","Neutrophils","PCs","T","TAMs"))
+Idents(sub) <- "experiment"
+sub <- subset(sub, idents = "Exp2")
+p <- FeaturePlot(sub, features = "DoubletFinder_score", reduction = "umap.mnn",cols = c("white","darkred") )
 ggsave("/scratch/khandl/technical/figures/Doublet/DoubletFinder_umap.svg", width = 8, height = 8, plot = p)
 
 ##### calculate percentage of doublet rate 
@@ -203,10 +207,10 @@ for (i in experimet_ids) {
 }
 
 sample <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
-multiplet_rate_per_sample <- c(13.0936,12.31273,14.94922,11.97315,10.12738,9.669854,10.66824)
+multiplet_rate_per_sample <- c(11.5845,12.13256,13.93955,12.19973,9.910298,11.14252,10.89251)
 df <- data.frame(sample, multiplet_rate_per_sample)
 df$method <- "DoubletFinder"
-write.csv(df,"/scratch/khandl/technical/figures/Doublet/DoubletFinder_doublet_rate2.csv")
+write.csv(df,"/scratch/khandl/technical/figures/Doublet/DoubletFinder_doublet_rate_no_corr.csv")
 
 ##### extract doublets and deconvolute 
 Idents(obj) <- "DoubletFinder_class"
@@ -275,7 +279,7 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
                                      ct.sub = as.character(unique(eset_SC$annotation)))
 
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result2.csv")
+write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result_no_corr.csv")
 
 ##### save Seurat object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated_DoubletFinder.rds")
+saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated_DoubletFinder.rds")

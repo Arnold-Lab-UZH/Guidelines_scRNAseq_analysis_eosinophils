@@ -21,4 +21,5 @@ library(scDblFinder)
 library(DoubletFinder)
 library(mclust)
 library(slingshot)
+library(RColorBrewer)
 

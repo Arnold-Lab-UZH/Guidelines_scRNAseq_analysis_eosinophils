@@ -8,19 +8,19 @@ setwd("/home/khandl")
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
 ##### Load Sample Tag Calls and exclude Undetermined calls 
-df1 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
+df1 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
 df1 <- df1[!df1$Sample_Name %in% c("Undetermined"),] 
-df2 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
+df2 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
 df2 <- df2[!df2$Sample_Name %in% c("Undetermined"),] 
-df3 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
+df3 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
 df3 <- df3[!df3$Sample_Name %in% c("Undetermined"),] 
-df4 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
+df4 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
 df4 <- df4[!df4$Sample_Name %in% c("Undetermined"),] 
-df5 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
+df5 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
 df5 <- df5[!df5$Sample_Name %in% c("Undetermined"),] 
-df6 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
+df6 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
 df6 <- df6[!df6$Sample_Name %in% c("Undetermined"),] 
-df7 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
+df7 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
 df7 <- df7[!df7$Sample_Name %in% c("Undetermined"),] 
 
 df_list <- list(df1,df2,df3,df4,df5,df6,df7)

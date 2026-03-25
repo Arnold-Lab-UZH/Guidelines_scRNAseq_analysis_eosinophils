@@ -9,7 +9,7 @@ source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.6.Functions_Doublet_detection.R")
 
 ##### Load annotated object 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
 
 ##### Define a treshold as the upper 99th percentile of nFeature_RNA in FeatureScatter plot 
 # Show the example of experiment 2 
@@ -96,10 +96,10 @@ for (i in experimet_ids) {
 }
 
 sample <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
-multiplet_rate_per_sample <- c(1.002381,1.000702,1.005818,1.001431,1.002297,1.001263,1.000266)
+multiplet_rate_per_sample <- c(1.002185,1.001771,1.005496,1.007028,0.9962049,1.001535,1.001208)
 df <- data.frame(sample, multiplet_rate_per_sample)
 df$method <- "nFeature_upper_cutoff"
-write.csv(df,"/scratch/khandl/technical/figures/Doublet/nFeature_upper_cutoff_doublet_rate.csv")
+write.csv(df,"/scratch/khandl/technical/figures/Doublet/nFeature_upper_cutoff_doublet_rate_corr.csv")
 
 ##### Extract doublets and deconvolute 
 Idents(obj) <- "doublet_singlet"
@@ -162,8 +162,8 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
 
 ### Save deconvolution result
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result.csv")
+write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result_corr.csv")
 
 ##### Save Seurat object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated_gene_count_cutoff.rds")
+saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_gene_count_cutoff.rds")
 

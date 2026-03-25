@@ -10,13 +10,13 @@ source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat
 
 ##### Extract multiplets from Unfiltered matrices based on Sample Tag Calls 
 ### Load Sample Tag Calls and extract Multiplets Cell IDs 
-P1 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
-P2 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
-P3 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
-P4 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
-P5 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
-P6 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
-P7 <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
+P1 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
+P2 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
+P3 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
+P4 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
+P5 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
+P6 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
+P7 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
 
 P1 <- P1[P1$Sample_Tag %in% "Multiplet",]$Cell_Index
 P2 <- P2[P2$Sample_Tag %in% "Multiplet",]$Cell_Index
@@ -26,7 +26,7 @@ P5 <- P5[P5$Sample_Tag %in% "Multiplet",]$Cell_Index
 P6 <- P6[P6$Sample_Tag %in% "Multiplet",]$Cell_Index
 P7 <- P7[P7$Sample_Tag %in% "Multiplet",]$Cell_Index
 
-### Load unfiltered matrices and extract Multiplet Cell IDs and generate Seurat objects 
+### Load unfiltered matrices and extract Multiplets Cell IDs and generate Seurat objects 
 ## P1 
 counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st")
 counts_data <- counts_data[,colnames(counts_data) %in% P1]

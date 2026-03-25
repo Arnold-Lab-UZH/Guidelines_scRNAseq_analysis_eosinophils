@@ -8,9 +8,9 @@ setwd("/home/khandl")
 source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
 
 ##### Load seurat objects 
-gene_counts_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated_gene_count_cutoff.rds")
-scDblFinder_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated_scDblFinder0025.rds")
-DoubletFinder_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated_DoubletFinder.rds")
+gene_counts_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_gene_count_cutoff.rds")
+scDblFinder_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_scDblFinder075.rds")
+DoubletFinder_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_DoubletFinder.rds")
 cell_hashing_obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_multiplets_from_cell_hashing.rds")
 
 # Add method ID 
@@ -20,9 +20,9 @@ DoubletFinder_obj$method <- "DoubletFinder"
 cell_hashing_obj$method <- "Cell_hashing"
 
 ##### Load SCDC results
-gene_counts_df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result.csv")
-scDblFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result0025.csv")
-DoubletFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result2.csv")
+gene_counts_df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result_corr.csv")
+scDblFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
+DoubletFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result_corr.csv")
 cell_hashing_df <- read.csv("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_deconvolution_result.csv")
 
 ### Extract cells that are present in df 
@@ -55,10 +55,10 @@ obj <- merge(DoubletFinder_obj, c(scDblFinder_obj,gene_counts_obj,cell_hashing_o
 ### Eosinophils
 # DoubletFinder
 obj <- DoubletFinder_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -71,10 +71,10 @@ df1 <- bind_rows(df_list)
 
 # Gene counts
 obj <- gene_counts_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -87,10 +87,10 @@ df2 <- bind_rows(df_list)
 
 # scDblFinder
 obj <- scDblFinder_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -103,10 +103,10 @@ df3 <- bind_rows(df_list)
 
 # cell hashing
 obj <- cell_hashing_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -137,10 +137,10 @@ TukeyHSD(anova)
 ### Neutrophils
 # DoubletFinder
 obj <- DoubletFinder_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -153,10 +153,10 @@ df1 <- bind_rows(df_list)
 
 # Gene counts
 obj <- gene_counts_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -169,10 +169,10 @@ df2 <- bind_rows(df_list)
 
 # scDblFinder
 obj <- scDblFinder_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -185,10 +185,10 @@ df3 <- bind_rows(df_list)
 
 # cell hashing
 obj <- cell_hashing_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -219,10 +219,10 @@ TukeyHSD(anova)
 ### Macrophages
 # DoubletFinder
 obj <- DoubletFinder_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -235,10 +235,10 @@ df1 <- bind_rows(df_list)
 
 # Gene counts
 obj <- gene_counts_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -251,10 +251,10 @@ df2 <- bind_rows(df_list)
 
 # scDblFinder
 obj <- scDblFinder_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%
@@ -267,10 +267,10 @@ df3 <- bind_rows(df_list)
 
 # cell hashing
 obj <- cell_hashing_obj
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- (as.data.frame(table(obj$experiment)))$Var1
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "experiment"
   sub <- subset(obj, idents = i)
   df <- sub@meta.data %>%
     group_by(method = .data$method) %>%

@@ -72,15 +72,22 @@
   - 7.4.Ambient_RNA_quantification_plotting_Hs_Mm.R: Plotting of quantified contamination summarising all three tools and all datasets, data from GSE282765; Hs NAT and tumor, 7 each; Mm colon healthy, tumor, NAT and disseminated, 1 each;
   
 **8. Doublet detection** 
-  - 8.1.Doublet_rate_cell_hashing.R: Doublet rate calculation using sample tag cell hashing calls; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.2.Doublets_cell_hashing_deconvolution.R: Deconvolution of doublets with SCDC; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.3.Doublet_detection_based_on_gene_counts.R: Doublet identification and quantification based on gene counts; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.4.Doublet_detection_scDblFinder.R: Doublet identification and quantification based on scDblFinder; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.5.Doublet_detection_DoubletFinder.R: Doublet identification and quantification based on DoubletFinder; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.6.1.Doublets_rate_comparison_methods.R: Comparison of doublet rate across different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.6.2.Doublets_rate_eos_comparison_methods.R: Comparison of percentage of eosinophil contribution within doublets across different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.6.3.Doublets_rate_SCDC_scores_across_methods.R: Comparison of SCDC deconvolution scores from eosinophils, neutrophils and macrophages in doublets from different algorithms; data from GSE282765; Hs NAT and tumor, 7 each; 
-  - 8.6.4.Doublets_rate_scDBlFinder_eos_doublets.R: Analysis of eosinophil contributing doublets from scDblFinder based on location in UMAP clustering and marker gene expression; data from GSE282765; Hs NAT and tumor, 7 each; 
+  - 8.1.Doublet_rate_cell_hashing.R: Doublet rate calculation using sample tag cell hashing calls; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.2.Doublets_cell_hashing_deconvolution.R: Deconvolution of doublets with SCDC; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.3.1.Annotation_counts_with_doublets_Hs_tumor_NAT_PB_GSE282765.R: Annotation of cell counts before cell hashing multiplexing, counts contain multiplets, data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.3.2.Ambient_correction_scCDC_counts_with_multiplets_Hs_tumor_NAT_PB_GSE282765.R: Ambient RNA correction with scCDC, data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.4.1.Doublet_detection_based_on_gene_counts_no_RNA_corr.R: Doublet identification and quantification based on gene counts, without ambient RNA correction; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.4.2.Doublet_detection_based_on_gene_counts_RNA_corr.R: Doublet identification and quantification based on gene counts, with scCDC correction; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.5.1.Doublet_detection_scDblFinder_no_RNA_corr.R: Doublet identification and quantification based on scDblFinder, without ambient RNA correction; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.5.1.Doublet_detection_scDblFinder_RNA_corr.R: Doublet identification and quantification based on scDblFinder, without scCDC correction; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.6.1.Doublet_detection_DoubletFinder_no_RNA_corr.R: Doublet identification and quantification based on DoubletFinder, without ambient RNA correction; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.6.2.Doublet_detection_DoubletFinder_RNA_corr.R: Doublet identification and quantification based on DoubletFinder, with scCDC correction; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.7.1.Doublets_rate_comparison_methods.R: Comparison of doublet rate across different algorithms; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.7.2.Doublets_rate_eos_comparison_methods.R: Comparison of percentage of eosinophil contribution within doublets across different algorithms; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.7.3.Doublets_rate_SCDC_scores_across_methods.R: Comparison of SCDC deconvolution scores from eosinophils, neutrophils and macrophages in doublets from different algorithms; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.7.4.Doublets_rate_scDBlFinder_eos_doublets.R: Analysis of eosinophil contributing doublets from scDblFinder based on location in UMAP clustering and marker gene expression; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.7.5.scDBlFinder_eos_doublets_comp_RNA_corr_vs_no_corr.R: Comparison of eosinophil contributing doublets between ambient RNA corrected and non-corrected datasets; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
+  - 8.7.6.Comparison_eos_doublets_to_true_doublets_based_on_cell_hashing.R: Comparision of eosinophil contributing doublets from doublets detection methods to true positive doublets based on cell hashing; data from GSE282765; Hs NAT, tumor and PB, 7 each; 
   
 **9. Comparison of eosinophils from Il5-tg and wild type BM and colon** 
   - 9.1.WT_vs_IL5tg_integration_annotation.R: Integration and annotation of BM and colon eosinophils from il5-tg and wt; data from GSE282765, GSE182001; 

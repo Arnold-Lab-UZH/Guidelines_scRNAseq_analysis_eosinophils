@@ -111,7 +111,7 @@ df <- rbind(df,h6_df)
 df_cell_hashing <- rbind(df,h7_df)
 
 ### Based on genene counts 
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result.csv")
+df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result_corr.csv")
 
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
@@ -213,7 +213,7 @@ df <- rbind(df,h6_df)
 df_upper_feature <- rbind(df,h7_df)
 
 ### Based on scDblFinder
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result0025.csv")
+df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
 
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
@@ -315,7 +315,7 @@ df <- rbind(df,h6_df)
 df_scDblFinder <- rbind(df,h7_df)
 
 ### Based on DoubletFinder
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result2.csv")
+df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result_corr.csv")
 
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]

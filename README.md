@@ -32,11 +32,14 @@
   - 3.2.Gene_counts_across_eos_subtypes.R: Calculating and plotting of median number of genes per annotated eosinophil subtypes data from GSE182001; 
   
 **4. Gene dropout rates and marker gene expression in eosinophils** 
-  - 4.1.Dropout_rate_per_cell_type.R: Calculation of the gene dropout rate across cell types; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
+  - 4.1.1.Dropout_rate_technical_and_biological_per_cell_type.R: Calculation of the gene dropout rate (technical and biological combined) across cell types; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
+  - 4.1.2.Dropout_rate_technical_per_cell_type.R: Calculation of the technical gene dropout rate across cell types; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
   - 4.2.ALRA_zero_imputation.R: Application of ALRA zero imputation and analysing the consequences of that; data from GSE182001; 
-  - 4.3.Eosinophil_marker_across_datasets.R: Extracting eosinophils specific marker genes from different datasets and tissues; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
-  - 4.4.Transcriptional_similarities.R: Analysing the transcriptional similarity of eosinophils to other cell types using Pearson correlation; data from GSM7919060, GSE216189, GSE282765, GSE182001; 
-  - 4.5.Eos_neutro_baso_mast_cell_marker.R: Analysing marker gene expression from eosinophils, neutrophils, mast cells and basophils 
+  - 4.3.Eosinophil_DEGs_wilcox_vs_MAST_vs_DESeq2.R: Comparison of DEGs between eosinophils and macrophages across different statistical methods; data from GSE282765; 
+  - 4.4.Eosinophil_marker_across_datasets.R: Extracting eosinophils specific marker genes from different datasets and tissues; data from GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001; 
+  - 4.5.Transcriptional_similarities.R: Analysing the transcriptional similarity of eosinophils to other cell types using Pearson correlation; data from GSM7919060, GSE216189, GSE282765, GSE182001; 
+  - 4.6.Eos_neutro_baso_mast_cell_marker.R: Analysing marker gene expression from eosinophils, neutrophils, mast cells and basophils 
+  - 4.7.Mac_vs_Eos_marker_genes_single_vs_multiple.R: Analysing single vs. multiple marker gene expression between macrophages and eosinophils; data from GSE282765; Hs tumor and NAT, 7 each; 
 
 **5. Gene mapping to intronic and exonic reads or exonic reads only** 
   - 5.1.1.Exons_only_annotation_Hs_tumor_NAT_GSE282765.R: Annotation of BD forced mapping to exonic reads only, data from GSE282765; Hs tumor and NAT, 7 each; 

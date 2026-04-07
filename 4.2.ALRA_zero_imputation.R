@@ -8,7 +8,7 @@ setwd("/home/khandl")
 source("~/Guidelines_scRNAseq_analysis_eosinophils/Technical/1.1.Packages.R")
 
 ##### Load dataset 
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS( "/scratch/khandl/4.Technical/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
 Idents(obj) <- "cell_determination"
 obj <- subset(obj, idents = "forced")
 Idents(obj) <- "reads"
@@ -104,4 +104,20 @@ table(sub$RNA_clusters, sub$ALRA_clusters)
 # Adjusted Rand Index (ARI) is a statistical measure that is used in cluster analysis to evaluate the similarity between two different clusterings 
 ari <- adjustedRandIndex(sub$RNA_clusters, sub$ALRA_clusters)
 ari
+
+### subcluster cluster 3
+Idents(sub) <- "seurat_clusters"
+subCl <- FindSubCluster(sub,cluster = 3,graph.name = "RNA_snn", 
+                        subcluster.name = "sub.cluster",resolution = 0.05)
+p <- DimPlot(subCl, label = TRUE, group.by = "sub.cluster")
+ggsave("/scratch/khandl/technical/figures/Dropouts/DimPlot_alra_clusters_sub.svg", width = 10, height = 8, plot = p)
+
+Idents(subCl) <- "sub.cluster"
+markers <-  c("Mki67","Tuba1b","Epx","Prg2","Ear1","Ear2","Alox15","Aldh2","S100a9","S100a6","S100a10","Il5","Retnla","Ccl9","Il1rl1","Cd24a","Mmp9",
+              "Icosl","Il4","Tgfb1","Pirb","Rara","Cd80","Cd274","Ptgs2","Il1rn","Tnf","Siglecf")
+p <- DotPlot(subCl, features = markers,dot.scale = 10, scale = TRUE, assay = "RNA",cols = c("white","darkred")) + 
+  theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
+  theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 45)) 
+ggsave("/scratch/khandl/technical/figures/Dropouts/sub_clustering_marker.svg", width = 10, height = 8, plot = p)
+
 

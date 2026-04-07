@@ -9,17 +9,17 @@ source("~/Projects/Technical/1.1.Packages.R")
 
 ##### Load R objects 
 In_house_data1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data2 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data3 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
+In_house_data2 <- readRDS("/scratch/khandl/4.Technical/Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds")
+In_house_data3 <- readRDS("/scratch/khandl/4.Technical/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
 In_house_data4 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data5 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
+In_house_data5 <- readRDS("/scratch/khandl/4.Technical/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
 
-Public_data1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_GSE256088_et_al_anno.rds")
-Public_data2 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_E-MTAB-14010_anno.rds")
-Public_data3 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_bm_GSM7919060_anno.rds")
-Public_data4 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_GSE276583_anno.rds")
-Public_data5 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_liver_GSE216189.rds")
-Public_data6 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_esophagus_duodenum_EoE_GSE175930_anno.rds")
+Public_data1 <- readRDS("/scratch/khandl/4.Technical/Hs_blood_GSE256088_et_al_anno.rds")
+Public_data2 <- readRDS("/scratch/khandl/4.Technical/Hs_blood_E-MTAB-14010_anno.rds")
+Public_data3 <- readRDS("/scratch/khandl/4.Technical/Mm_bm_GSM7919060_anno.rds")
+Public_data4 <- readRDS("/scratch/khandl/4.Technical/Hs_blood_GSE276583_anno.rds")
+Public_data5 <- readRDS("/scratch/khandl/4.Technical/Mm_liver_GSE216189.rds")
+Public_data6 <- readRDS("/scratch/khandl/4.Technical/Hs_esophagus_duodenum_EoE_GSE175930_anno.rds")
 
 ##### Remove ? and lowQ and mixed cells 
 Idents(In_house_data1) <- "annotation"
@@ -66,21 +66,26 @@ Public_data6 <- subset(Public_data6, idents = c("T", "Mast","PCs","Macrophages",
 obj <- In_house_data1
 Idents(obj) <- "tissue"
 obj <- subset(obj, idents = "colon")
-sample <- (as.data.frame(table(obj$sample)))$Var1
+#sample <- (as.data.frame(table(obj$sample)))$Var1
+sample <- c("P1_tissue_ctrl", "P3_tissue_ctrl", "P4_tissue_ctrl", "P5_tissue_ctrl", "P6_tissue_ctrl")
 df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "colon"
   df$technology <- "BD"
@@ -101,15 +106,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "tumor"
   df$technology <- "BD"
@@ -123,21 +132,26 @@ df2 <- bind_rows(df_list)
 
 ### In_house_data2
 obj <- In_house_data2
-sample <- (as.data.frame(table(obj$sample)))$Var1
+#sample <- (as.data.frame(table(obj$sample)))$Var1
+sample <- c("H3_blood","H5_blood","H7_blood","H8_blood","H9_blood", "P1_blood", "P6_blood", "P7_blood")
 df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "blood"
   df$technology <- "BD"
@@ -159,15 +173,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "colon"
   df$technology <- "BD"
@@ -188,15 +206,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "tumor"
   df$technology <- "BD"
@@ -218,15 +240,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "blood"
   df$technology <- "BD"
@@ -247,15 +273,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "bm"
   df$technology <- "BD"
@@ -269,21 +299,26 @@ df7 <- bind_rows(df_list)
 
 ### In_house_data5
 obj <- In_house_data5
-sample <- (as.data.frame(table(obj$sample)))$Var1
+#sample <- (as.data.frame(table(obj$sample)))$Var1
+sample <- c( "blood", "small_int", "spleen",    "stomach" )
 df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- i
   df$technology <- "BD"
@@ -304,15 +339,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "blood"
   df$technology <- "HIVE"
@@ -333,15 +372,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "blood"
   df$technology <- "BD"
@@ -362,15 +405,19 @@ for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "bm"
   df$technology <- "10X"
@@ -385,21 +432,26 @@ df11 <- bind_rows(df_list)
 ### Public_data4
 obj <- Public_data4
 obj$sample <- obj$condition
-sample <- (as.data.frame(table(obj$sample)))$Var1
+#sample <- (as.data.frame(table(obj$sample)))$Var1
+sample <- c("healthy_MNC1", "healthy_MNC2", "healthy_MNC3",  "healthy_PB2", "healthy_PB4", "mild_asthma_PB1","severe_asthma_PB1")
 df_list <- list()
 for (i in sample){
   Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "blood"
   df$technology <- "10X"
@@ -414,21 +466,26 @@ df12 <- bind_rows(df_list)
 ### Public_data5
 obj <- Public_data5
 obj$sample <- obj$condition
-sample <- (as.data.frame(table(obj$condition)))$Var1
+#sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- c("Liver_healthy1", "Liver_mets1", "Liver_mets10",   "Liver_mets11",    "Liver_mets3",    "Liver_mets6",    "Liver_mets8",    "Liver_mets9" )
 df_list <- list()
 for (i in sample){
-  Idents(obj) <- "condition"
+  Idents(obj) <- "sample"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "liver"
   df$technology <- "BD"
@@ -444,21 +501,25 @@ df13 <- bind_rows(df_list)
 obj <- Public_data6
 Idents(obj) <- "tissue"
 obj <- subset(obj, idents = "duodenum")
-sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- c("Duodenum_EoE_active1", "Duodenum_EoE_active2", "Duodenum_EoE_active3", "Duodenum_EoE_rem1",    "Duodenum_EoE_rem3" )
 df_list <- list()
 for (i in sample){
   Idents(obj) <- "condition"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "duodenum"
   df$technology <- "Seq_Well"
@@ -473,21 +534,26 @@ df14 <- bind_rows(df_list)
 obj <- Public_data6
 Idents(obj) <- "tissue"
 obj <- subset(obj, idents = "esophagus")
-sample <- (as.data.frame(table(obj$condition)))$Var1
+#sample <- (as.data.frame(table(obj$condition)))$Var1
+sample <- c( "Esophagus_EoE_active2", "Esophagus_EoE_active3", "Esophagus_EoE_rem1",    "Esophagus_EoE_rem4" )
 df_list <- list()
 for (i in sample){
   Idents(obj) <- "condition"
   sub <- subset(obj, idents = i)
   
+  # extract counts 
   counts <- GetAssayData(sub, assay = "RNA", layer = "counts")
   
-  df <- data.frame(celltype = unique(sub$annotation)) %>%
-    rowwise() %>%
-    mutate(
-      dropout_rate = (sum(counts[, sub$annotation == celltype, drop = FALSE] == 0) /
-                        length(counts[, sub$annotation == celltype, drop = FALSE])) * 100
-    ) %>%
-    as.data.frame()
+  # calculate dropout rate per cell 
+  dropout_rate_cell <- apply(counts, 2, function(x) {
+    (sum(x == 0) / length(x)) * 100})
+  
+  # generate dataframe with cell type and cell ID 
+  df_cells <- data.frame(cell = colnames(counts),celltype = sub$annotation,dropout_rate = dropout_rate_cell)
+  
+  # calculate the median across cells for each cell type 
+  df <- df_cells %>% group_by(celltype) %>% summarise(median_dropout = median(dropout_rate), .groups = "drop")
+  df <- as.data.frame(df)
   
   df$tissue <- "esophagus"
   df$technology <- "Seq_Well"
@@ -502,9 +568,10 @@ df15 <- bind_rows(df_list)
 #### Combine all dataframes 
 df_list_all <- list(df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11,df12,df13,df14,df15)
 df <- bind_rows(df_list_all)
+length(unique(df$sample)) #69
 
 ##### Per cell type 
-p <- ggplot(df, aes(x = reorder(celltype, dropout_rate, FUN = median), y =  dropout_rate, fill = celltype)) + 
+p <- ggplot(df, aes(x = reorder(celltype, median_dropout, FUN = median), y =  median_dropout, fill = celltype)) + 
   geom_boxplot(outlier.shape = 16) + 
   theme_minimal() +   
   #geom_point(position = position_dodge(width = 0.75), size = 2.5,shape = 21, fill = "white",colour = "black", alpha = 0.6, stroke = 1.2) + 
@@ -517,6 +584,6 @@ p <- ggplot(df, aes(x = reorder(celltype, dropout_rate, FUN = median), y =  drop
 ggsave("/scratch/khandl/technical/figures/Dropouts/all.svg", width = 20, height = 8, plot = p)
 
 ## Statistical test --> one way ANOVA 
-anova <- aov(dropout_rate ~ celltype, data = df)
+anova <- aov(median_dropout ~ celltype, data = df)
 summary(anova)
 TukeyHSD(anova)

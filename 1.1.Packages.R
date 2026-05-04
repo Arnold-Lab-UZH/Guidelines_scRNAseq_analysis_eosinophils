@@ -23,3 +23,5 @@ library(mclust)
 library(slingshot)
 library(RColorBrewer)
 
+library(scCDC)
+

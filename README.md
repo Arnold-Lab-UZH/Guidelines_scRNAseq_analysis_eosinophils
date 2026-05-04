@@ -1,6 +1,8 @@
 # Guidelines for single cell RNA sequencing analysis of Eosinophils 
 ### This is a resource for our analysis of Guidelines for scRNAseq analysis of eosinophils from the Arnold lab.
 
+#### The puclication can be found here: https://doi.org/10.1093/jleuko/qiag055
+
 #### All data used are accessible under the specific accessory number on GEO or ArrayExpress (GSE256088, GSE175930, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001, E-MTAB-14010). Additionally, datafiles generated for this study can be found on zenodo.oro: https://zenodo.org/records/17711207
 
 ### Code description: 

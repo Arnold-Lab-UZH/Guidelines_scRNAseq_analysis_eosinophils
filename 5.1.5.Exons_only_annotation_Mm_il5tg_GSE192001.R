@@ -138,13 +138,13 @@ obj <- subset(obj, idents = c("Eosinophils","EoP"))
 obj_reference <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_eos_annotation.rds")
 
 ##### Clustering 
+obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
 obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
 
 ##### FastMNN integraiton 
-obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
 obj <- IntegrateLayers(object = obj, method = FastMNNIntegration,new.reduction = "integrated.mnn",
                        verbose = FALSE)
 ElbowPlot(obj)

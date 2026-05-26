@@ -170,13 +170,13 @@ obj <- merge(sub_exp1,y= c(sub_exp2,sub_exp3,sub_exp4,sub_exp5,sub_exp7,sub_exp8
 obj <- JoinLayers(obj)
 
 ##### pre-process and cluster 
+obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
 obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
 
 ### fastMNN integration 
-obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
 obj <- IntegrateLayers(object = obj, method = FastMNNIntegration,new.reduction = "integrated.mnn",
                        verbose = FALSE)
 ElbowPlot(obj)         

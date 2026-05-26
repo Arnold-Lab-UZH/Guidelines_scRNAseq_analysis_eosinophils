@@ -67,13 +67,13 @@ obj1 <- subset(obj1, subset = nFeature_RNA < 8000 & percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj <- obj1
+obj[["RNA"]] <- split(obj[["RNA"]], f = obj$batch)
 obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(object = obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
 
 ### FastMNN integration 
-obj[["RNA"]] <- split(obj[["RNA"]], f = obj$batch)
 obj <- IntegrateLayers(object = obj, method = FastMNNIntegration,new.reduction = "integrated.mnn",
                        verbose = FALSE)
 ElbowPlot(obj)

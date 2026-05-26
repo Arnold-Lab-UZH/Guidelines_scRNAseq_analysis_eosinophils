@@ -70,13 +70,13 @@ summary(is.na(merged@meta.data[, c("nFeature_RNA", "nCount_RNA", "percent.mt")])
 keep_cells <- complete.cases(merged@meta.data[, c("percent.mt", "nCount_RNA", "nFeature_RNA")])
 merged <- subset(merged, cells = Cells(merged)[keep_cells])
 
+merged[["RNA"]] <- split(merged[["RNA"]], f = merged$condition)
 merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1)
 merged <- FindVariableFeatures(merged)
 merged <- ScaleData(merged,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 merged <- RunPCA(merged, features = VariableFeatures(object =merged), npcs = 20, verbose = FALSE)
 
 ### FastMNN integration 
-merged[["RNA"]] <- split(merged[["RNA"]], f = merged$condition)
 merged <- IntegrateLayers(object = merged, method = FastMNNIntegration,new.reduction = "integrated.mnn",
                           verbose = FALSE)
 ElbowPlot(merged)         

@@ -1,15 +1,13 @@
 ########## This code uses SoupX for ambient RNA quantification  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Load R object 
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS( file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ### Change the cell type label ? to Undefined 
 current.cluster.ids <- c("?","B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts", "lowQ", "Macrophages","Mast","Mixed",
@@ -20,8 +18,8 @@ obj$annotation <- plyr::mapvalues(x = obj$annotation, from = current.cluster.ids
 
 ##### Run for each experiment  
 ### Exp1 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st")
-
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
+  
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp1")
 
@@ -99,7 +97,7 @@ contamination_values <- c(13.84,8.82,13.01,11.38,6.00,7.50,7.91,10.76,15.14,14.2
 df2 <- data.frame(cell_types, contamination_values)
 
 ### Exp2
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P2_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P2_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp2")
 tod <- counts_data       # ambient profile 
@@ -156,7 +154,7 @@ contamination_values <- c(20.59,3.17,6.17,17.93,3.19,3.08,3.45,5.89,4.47,10.81,8
 df4 <- data.frame(cell_types, contamination_values)
 
 ### Exp 3
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P3_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P3_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp3")
 tod <- counts_data       # ambient profile 
@@ -216,7 +214,7 @@ contamination_values <- c(67.71,6.68,6.87,27.77,10.81,10.63,8.79,14.25,11.97,24.
 df6 <- data.frame(cell_types, contamination_values)
 
 ### Exp 4
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P4_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P4_tumor_NAT_Expression_Data_Unfiltered.st"))
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp4")
 tod <- counts_data       # ambient profile 
@@ -278,7 +276,7 @@ contamination_values <- c(5.33,2.08,4.03,12.83,1.70,2.85,2.35,2.45, 2.89,7.23,77
 df8 <- data.frame(cell_types, contamination_values)
 
 ### Exp5 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P5_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P5_tumor_NAT_Expression_Data_Unfiltered.st"))
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp5")
 tod <- counts_data       # ambient profile 
@@ -337,8 +335,8 @@ cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts
 contamination_values <- c(22.93,3.42,4.44,16.06,2.42,3.17,3.31,6.47,4.49,11.46,99, 3.09,7.04)
 df10 <- data.frame(cell_types, contamination_values)
 
-### Exp7
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P6_tumor_NAT_Expression_Data_Unfiltered.st")
+### Exp7 = patient 6
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P6_tumor_NAT_Expression_Data_Unfiltered.st"))
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp7")
 tod <- counts_data       # ambient profile 
@@ -394,8 +392,8 @@ for(i in cell_types) {
 contamination_values <- c(10.32,2.18,2.58,9.25,1.69,1.66,2.29,2.69,2.67,6.33,75.78,2.03,4.15)
 df12 <- data.frame(cell_types, contamination_values)
 
-### Exp 8
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P7_tumor_NAT_Expression_Data_Unfiltered.st")
+### Exp 8 = patient 7
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_dir, "1.GSE282765/Unfiltered/P7_tumor_NAT_Expression_Data_Unfiltered.st"))
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp8")
 tod <- counts_data       # ambient profile 
@@ -457,4 +455,4 @@ df14 <- data.frame(cell_types, contamination_values)
 ##### Combine all data frames and save for later 
 df_list <- list(df1, df2, df3, df4, df5, df6, df7,df8, df9, df10, df11, df12, df13, df14)
 df <- do.call(rbind, df_list) 
-write.csv(df,"/scratch/khandl/technical/figures/Ambient_RNA/SoupX_Hs.csv")
+write.csv(df,file.path(ambient_rna_tables_dir, "SoupX_Hs.csv"))

@@ -1,14 +1,12 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of Mm healthy BM from GSM7819060  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir,"1.2.Functions_Seurat_integration.R"))
 
 ##### Seurat object generation 
-BM_eos <- create_seurat_10X_structured_data( "/scratch/khandl/6.GSM7919060/","BM_IL33",3,200, "BM_IL33","BM_IL33","BM_IL33","healthy")
+BM_eos <- create_seurat_10X_structured_data( file.path(raw_data_GSM7919060_dir),"BM_IL33",3,200, "BM_IL33","BM_IL33","BM_IL33","healthy")
 
 ### Add mitochondrial percentage per cell 
 BM_eos$percent.mt <- PercentageFeatureSet(BM_eos, pattern = "^mt-")
@@ -19,7 +17,7 @@ BM_eos <- subset(BM_eos, subset = percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj <- BM_eos
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -33,9 +31,8 @@ obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "seurat_clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -60,7 +57,7 @@ DotPlot(obj, features =  unique(c("Tpsab1", "Tpsb2","Kit", # Mast cells
                                   "Pecam1" ,# Endothelial 
                                   "Mki67","Msi1","Meis1", # MPPs
                                   "Cd34","Cebpa", # GMPs
-                                  "Elane","Cepbe", # ProNeutro
+                                  "Elane","Cebpe", # ProNeutro
                                   "Ly6c2","Csf2r","Irf8", # ProMono
                                   "Flt3","Dntt","Il7r", # CLPs
                                   "Epx","Ear1","Ear2" # EoP
@@ -91,7 +88,7 @@ DotPlot(obj, features =  unique(c("Tpsab1", "Tpsb2","Kit", # Mast cells
                                   "Pecam1" ,# Endothelial 
                                   "Mki67","Msi1","Meis1", # MPPs
                                   "Cd34","Cebpa", # GMPs
-                                  "Elane","Cepbe", # ProNeutro
+                                  "Elane","Cebpe", # ProNeutro
                                   "Ly6c2","Csf2r","Irf8", # ProMono
                                   "Flt3","Dntt","Il7r", # CLPs
                                   "Epx","Ear1","Ear2" # EoP
@@ -104,4 +101,4 @@ obj$cell_enrichment <- "Eosinophils"
 obj$tissue <- "bm"
 
 ##### Save object 
-saveRDS(obj, file = "/scratch/khandl/technical/seurat_objects/Mm_bm_GSM7919060_anno.rds")
+saveRDS(obj, file = file.path(seurat_objects_dir,"Mm_bm_GSM7919060_anno.rds"))

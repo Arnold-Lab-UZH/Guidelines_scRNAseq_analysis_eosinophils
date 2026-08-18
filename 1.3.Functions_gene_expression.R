@@ -9,11 +9,10 @@ DEG_to_csv_two_cond <- function(
     csv_file_directory
 ){
   seurat_object <- NormalizeData(seurat_object, normalization.method = "LogNormalize",
-                                 scale.factor = 10000,
-                                 margin = 1, assay = assay_oi)
+                                 scale.factor = 10000, assay = assay_oi)
   DefaultAssay(seurat_object) <- assay_oi
   markers <- FindMarkers(object = seurat_object, ident.1 = cond1, ident.2 = cond2, only.pos = only.pos_condition, min.pct = 0.25, 
-                         logfc.threshold = logfc_threshold,slot = "data")
+                         logfc.threshold = logfc_threshold,layer = "data")
   write.csv(markers, file = csv_file_directory)
 }
 
@@ -39,7 +38,6 @@ heatmap_goi_coi <- function(
     markers_oi,
     groups_of_markers,
     number_of_markers_per_group,
-    colors_per_group,
     groups_and_colors,
     cluster_rows_cond,
     cluster_cols_cond
@@ -59,9 +57,6 @@ heatmap_goi_coi <- function(
   rownames(annotation_rows)   <- rownames(average_expression_df)
   annotation_rows$markers     <- factor(annotation_rows$markers, levels = groups_of_markers)
   
-  mycolors <- colors_per_group
-  names(mycolors) <- unique(annotation_rows$markers)
-  mycolors <- list(category = mycolors)
   annot_colors=list(markers=groups_and_colors)
   
   p <- pheatmap(average_expression_df,scale = "row",
@@ -69,7 +64,6 @@ heatmap_goi_coi <- function(
                 breaks = breaksList,
                 cluster_rows = cluster_rows_cond, cluster_cols = cluster_cols_cond, 
                 border_color = "black", 
-                legend_breaks = -6:6, 
                 cellwidth = 10, cellheight = 5,
                 angle_col = "45", 
                 annotation_colors = annot_colors,

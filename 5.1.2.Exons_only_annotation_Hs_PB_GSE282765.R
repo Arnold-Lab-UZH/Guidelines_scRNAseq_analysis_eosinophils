@@ -1,52 +1,46 @@
 ########### This code compares forced BD pipeline with two different gene mapping strategies (exons + introns and exons only )  ##########
 ### Datasets used: GSE282765; Hs PB healthy and CRC 
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+##### link to libraries and functions
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Load annotated object from BD forced pipeline with intron and exon mapping 
-obj_reference <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_reference <- readRDS(file.path(seurat_objects_dir,"Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Seurat object generation from BD forced exons only  
 ### Forced cell determination exonic reads only 
 ## Healthy individuals 
-H1 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H1_Hs_PB_healthy_forced_cell_determination_exonic_only_ST01_Expression_Data.st"), 
-                            "H1",3,200,  "H1_blood","blood_healthy","Exp6","healthy")
-H2 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H2_Hs_PB_healthy_forced_cell_determination_exonic_only_ST05_Expression_Data.st"), 
-                            "H2",3,200,  "H2_blood","blood_healthy","Exp6","healthy")
-H3 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H3_Hs_PB_healthy_forced_cell_determination_exonic_only_ST09_Expression_Data.st"), 
-                            "H3",3,200,  "H3_blood","blood_healthy","Exp6","healthy")
-H4 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H4_Hs_PB_healthy_forced_cell_determination_exonic_only_ST10_Expression_Data.st"), 
-                            "H4",3,200,  "H4_blood","blood_healthy","Exp6","healthy")
-H5 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H5_Hs_PB_healthy_forced_cell_determination_exonic_only_ST11_Expression_Data.st"), 
-                            "H5",3,200,  "H5_blood","blood_healthy","Exp6","healthy")
-H6 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H6_Hs_PB_healthy_forced_cell_determination_exonic_only_ST12_Expression_Data.st"), 
-                            "H6",3,200,  "H6_blood","blood_healthy","Exp6","healthy")
-H7 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H7_Hs_PB_healthy_forced_cell_determination_exonic_only_ST04_Expression_Data.st"), 
-                            "H7",3,200,  "H7_blood","blood_healthy","Exp1","healthy")
-H8 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H8_Hs_PB_healthy_forced_cell_determination_exonic_only_ST05_Expression_Data.st"), 
-                            "H8",3,200,  "H8_blood","blood_healthy","Exp2","healthy")
-H9 <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_healthy/Forced_cell_determination_exonic_reads_only", "H9_Hs_PB_healthy_forced_cell_determination_exonic_only_ST12_Expression_Data.st"), 
-                            "H9",3,200,  "H9_blood","blood_healthy","Exp3","healthy")
+P1_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P1_Hs_PB_forced_cell_determination_exonic_only_ST03_Expression_Data.st"), 
+                                  "P1",3,200,  "P1_blood","blood_patient","Exp1","patient")
+P2_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P2_Hs_PB_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
+                                  "P2",3,200,  "P2_blood","blood_patient","Exp2","patient")
+P3_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P3_Hs_PB_forced_cell_determination_exonic_only_ST11_Expression_Data.st"), 
+                                  "P3",3,200,  "P3_blood","blood_patient","Exp3","patient")
+P4_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P4_Hs_PB_forced_cell_determination_exonic_only_ST02_Expression_Data.st"), 
+                                  "P4",3,200,  "P4_blood","blood_patient","Exp4","patient")
+P5_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P5_Hs_PB_forced_cell_determination_exonic_only_ST08_Expression_Data.st"), 
+                                  "P5",3,200,  "P5_blood","blood_patient","Exp5","patient")
+P6_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P6_Hs_PB_forced_cell_determination_exonic_only_ST05_Expression_Data.st"), 
+                                  "P6",3,200,  "P6_blood","blood_patient","Exp7","patient")
+P7_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_healthy_forced_exon_only_dir, "P7_Hs_PB_forced_cell_determination_exonic_only_ST10_Expression_Data.st"), 
+                                  "P7",3,200,  "P7_blood","blood_patient","Exp8","patient")
 
 ## CRC patient blood 
-P1_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P1_Hs_PB_forced_cell_determination_exonic_only_ST03_Expression_Data.st"), 
+P1_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P1_Hs_PB_forced_cell_determination_exonic_only_ST03_Expression_Data.st"), 
                                   "P1",3,200,  "P1_blood","blood_patient","Exp1","patient")
-P2_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P2_Hs_PB_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
+P2_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P2_Hs_PB_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
                                   "P2",3,200,  "P2_blood","blood_patient","Exp2","patient")
-P3_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P3_Hs_PB_forced_cell_determination_exonic_only_ST11_Expression_Data.st"), 
+P3_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P3_Hs_PB_forced_cell_determination_exonic_only_ST11_Expression_Data.st"), 
                                   "P3",3,200,  "P3_blood","blood_patient","Exp3","patient")
-P4_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P4_Hs_PB_forced_cell_determination_exonic_only_ST02_Expression_Data.st"), 
+P4_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P4_Hs_PB_forced_cell_determination_exonic_only_ST02_Expression_Data.st"), 
                                   "P4",3,200,  "P4_blood","blood_patient","Exp4","patient")
-P5_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P5_Hs_PB_forced_cell_determination_exonic_only_ST08_Expression_Data.st"), 
+P5_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P5_Hs_PB_forced_cell_determination_exonic_only_ST08_Expression_Data.st"), 
                                   "P5",3,200,  "P5_blood","blood_patient","Exp5","patient")
-P6_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P6_Hs_PB_forced_cell_determination_exonic_only_ST05_Expression_Data.st"), 
+P6_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P6_Hs_PB_forced_cell_determination_exonic_only_ST05_Expression_Data.st"), 
                                   "P6",3,200,  "P6_blood","blood_patient","Exp7","patient")
-P7_blood <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_PB_CRC/Forced_cell_determination_exonic_reads_only", "P7_Hs_PB_forced_cell_determination_exonic_only_ST10_Expression_Data.st"), 
+P7_blood <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_PB_CRC_forced_exon_only_dir, "P7_Hs_PB_forced_cell_determination_exonic_only_ST10_Expression_Data.st"), 
                                   "P7",3,200,  "P7_blood","blood_patient","Exp8","patient")
 
 ### Merge samples
@@ -65,10 +59,10 @@ blood$technology <- "BD_Rhapsody"
 blood$cell_enrichment  <- "Eosinophils"
 
 ### Save object
-saveRDS(blood, file = "/scratch/khandl/technical/seurat_objects/Forced_cell_determination_exonic_reads_only_Hs_PB_healthy_and_CRC.rds")
+saveRDS(blood, file = file.path(seurat_objects_dir,"Forced_cell_determination_exonic_reads_only_Hs_PB_healthy_and_CRC.rds"))
 
 ##### Load exons only object 
-obj <- readRDS("/scratch/khandl/4.Technical/Forced_cell_determination_exonic_reads_only_Hs_PB_healthy_and_CRC.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Forced_cell_determination_exonic_reads_only_Hs_PB_healthy_and_CRC.rds"))
 
 ### Apply mitochondrial cutoff 
 obj <- subset(obj, subset = percent.mt < 25)
@@ -76,7 +70,7 @@ obj <- subset(obj, subset = percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,  margin = 1,assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -88,7 +82,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
 ##### Transfer of annotation based on matching cell IDs 
@@ -136,8 +130,8 @@ obj@meta.data <- obj@meta.data %>%
 table(obj$annotation)
 DimPlot(obj, group.by = "annotation", label = TRUE)
 
-p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
-p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
+p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 p1 + p2
 
 # Remove NA
@@ -146,7 +140,7 @@ obj <- subset(obj, idents = c("Basophils","DCs","Eosinophils","Fibroblasts","low
                               "Monocytes","Neutrophils","PCs","T","ProNeutro","Undefined"))
 
 ##### save object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Hs_PB_forced_cell_determination_exons_only_annotation.rds")
+saveRDS(obj,file.path(seurat_objects_dir,"Hs_PB_forced_cell_determination_exons_only_annotation.rds"))
 
 
 

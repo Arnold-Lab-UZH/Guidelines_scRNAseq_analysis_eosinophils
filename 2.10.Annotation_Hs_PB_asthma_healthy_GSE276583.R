@@ -1,33 +1,31 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of PB from healthy individuals and asthma patients from GSE276583  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir,"1.2.Functions_Seurat_integration.R"))
 
 ##### Seurat object generation 
-PB_ctrl1 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_healthy1","healthy",3,200, "healthy_PB1","healhty_PB","Exp1","healthy")
-PB_ctrl2 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_healthy2","healthy",3,200, "healthy_PB2","healhty_PB","Exp1","healthy")
-PB_ctrl3 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_healthy3","healthy",3,200, "healthy_PB3","healhty_PB","Exp1","healthy")
-PB_ctrl4 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_healthy4","healthy",3,200, "healthy_PB4","healhty_PB","Exp1","healthy")
+PB_ctrl1 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_healthy1"),"healthy",3,200, "healthy_PB1","healthy_PB","Exp1","healthy")
+PB_ctrl2 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_healthy2"),"healthy",3,200, "healthy_PB2","healthy_PB","Exp1","healthy")
+PB_ctrl3 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_healthy3"),"healthy",3,200, "healthy_PB3","healthy_PB","Exp1","healthy")
+PB_ctrl4 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_healthy4"),"healthy",3,200, "healthy_PB4","healthy_PB","Exp1","healthy")
 
-PB_asthma_mild1 <-  create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_mild_asthma1","mild_asthma",3,200, "mild_asthma_PB1","mild_asthma","Exp1","mild_asthma")
-PB_asthma_mild2 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_mild_asthma2","mild_asthma",3,200, "mild_asthma_PB2","mild_asthma","Exp1","mild_asthma")
-PB_asthma_mild3 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_mild_asthma3","mild_asthma",3,200, "mild_asthma_PB3","mild_asthma","Exp1","mild_asthma")
-PB_asthma_mild4 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_mild_asthma4","mild_asthma",3,200, "mild_asthma_PB4","mild_asthma","Exp1","mild_asthma")
-PB_asthma_mild5 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_mild_asthma5","mild_asthma",3,200, "mild_asthma_PB5","mild_asthma","Exp1","mild_asthma")
-PB_asthma_mild6 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_mild_asthma6","mild_asthma",3,200, "mild_asthma_PB6","mild_asthma","Exp1","mild_asthma")
+PB_asthma_mild1 <-  create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_mild_asthma1"),"mild_asthma",3,200, "mild_asthma_PB1","mild_asthma","Exp1","mild_asthma")
+PB_asthma_mild2 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_mild_asthma2"),"mild_asthma",3,200, "mild_asthma_PB2","mild_asthma","Exp1","mild_asthma")
+PB_asthma_mild3 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_mild_asthma3"),"mild_asthma",3,200, "mild_asthma_PB3","mild_asthma","Exp1","mild_asthma")
+PB_asthma_mild4 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_mild_asthma4"),"mild_asthma",3,200, "mild_asthma_PB4","mild_asthma","Exp1","mild_asthma")
+PB_asthma_mild5 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_mild_asthma5"),"mild_asthma",3,200, "mild_asthma_PB5","mild_asthma","Exp1","mild_asthma")
+PB_asthma_mild6 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_mild_asthma6"),"mild_asthma",3,200, "mild_asthma_PB6","mild_asthma","Exp1","mild_asthma")
 
-PB_asthma_severe1 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_severe_asthma1","severe_asthma",3,200, "severe_asthma_PB1","severe_asthma","Exp1","severe_asthma")
-PB_asthma_severe2 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_severe_asthma2","severe_asthma",3,200, "severe_asthma_PB2","severe_asthma","Exp1","severe_asthma")
-PB_asthma_severe3 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_severe_asthma3","severe_asthma",3,200, "severe_asthma_PB3","severe_asthma","Exp1","severe_asthma")
-PB_asthma_severe4 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/eos_severe_asthma4","severe_asthma",3,200, "severe_asthma_PB4","severe_asthma","Exp1","severe_asthma")
+PB_asthma_severe1 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_severe_asthma1"),"severe_asthma",3,200, "severe_asthma_PB1","severe_asthma","Exp1","severe_asthma")
+PB_asthma_severe2 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_severe_asthma2"),"severe_asthma",3,200, "severe_asthma_PB2","severe_asthma","Exp1","severe_asthma")
+PB_asthma_severe3 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_severe_asthma3"),"severe_asthma",3,200, "severe_asthma_PB3","severe_asthma","Exp1","severe_asthma")
+PB_asthma_severe4 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"eos_severe_asthma4"),"severe_asthma",3,200, "severe_asthma_PB4","severe_asthma","Exp1","severe_asthma")
 
-MNC_ctrl1 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/MNC_healthy1","healthy",3,200, "healthy_MNC1","healhty_MNC","Exp1","healthy")
-MNC_ctrl2 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/MNC_healthy2","healthy",3,200, "healthy_MNC2","healhty_MNC","Exp1","healthy")
-MNC_ctrl3 <- create_seurat_10X_structured_data( "/scratch/khandl/5.GSE276583/MNC_healthy3","healthy",3,200, "healthy_MNC3","healhty_MNC","Exp1","healthy")
+MNC_ctrl1 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"MNC_healthy1"),"healthy",3,200, "healthy_MNC1","healthy_MNC","Exp1","healthy")
+MNC_ctrl2 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"MNC_healthy2"),"healthy",3,200, "healthy_MNC2","healthy_MNC","Exp1","healthy")
+MNC_ctrl3 <- create_seurat_10X_structured_data( file.path(raw_data_GSE276583_dir,"MNC_healthy3"),"healthy",3,200, "healthy_MNC3","healthy_MNC","Exp1","healthy")
 
 ### Merge samples
 obj <- merge(PB_ctrl1, y = c(PB_ctrl2, PB_ctrl3,PB_ctrl4,PB_asthma_mild1,PB_asthma_mild2,PB_asthma_mild3,PB_asthma_mild4,
@@ -47,7 +45,7 @@ obj <- subset(obj, subset = percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$tissue)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -65,9 +63,8 @@ obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "mnn.clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters
@@ -134,4 +131,4 @@ obj$cell_enrichment <- "Eosinophils"
 obj$tissue <- "blood"
 
 ##### Save object 
-saveRDS(obj, file = "/scratch/khandl/technical/seurat_objects/Hs_blood_GSE276583_anno.rds")
+saveRDS(obj, file = file.path(seurat_objects_dir,"Hs_blood_GSE276583_anno.rds"))

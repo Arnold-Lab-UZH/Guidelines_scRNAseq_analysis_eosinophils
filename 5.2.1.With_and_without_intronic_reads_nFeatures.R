@@ -1,27 +1,25 @@
 ######## This code compares the number of genes across cell types between intronic+exonic and exonic reads only mapping  ##########
 ### Datasets used: GSE282765 and GSE182001
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+##### link to libraries and functions
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load annotaed objects 
-human_colon <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
-human_colon_exon_only <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_exons_only_annotation.rds")
+human_colon <- readRDS(file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
+human_colon_exon_only <- readRDS(file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_exons_only_annotation.rds"))
 
-human_blood <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds")
-human_blood_exon_only <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_PB_forced_cell_determination_exons_only_annotation.rds")
+human_blood <- readRDS(file.path(seurat_objects_dir,"Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds"))
+human_blood_exon_only <- readRDS(file.path(seurat_objects_dir,"Hs_PB_forced_cell_determination_exons_only_annotation.rds"))
 
-mouse_colon <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
-mouse_colon_exon_only <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_exons_only_annotation.rds")
+mouse_colon <- readRDS(file.path(seurat_objects_dir,"Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds"))
+mouse_colon_exon_only <- readRDS(file.path(seurat_objects_dir,"Mm_tumor_colon_NAT_diss_forced_cell_determination_exons_only_annotation.rds"))
 
-mouse_blood <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
-mouse_blood_exon_only <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_exons_only_annotation.rds")
+mouse_blood <- readRDS(file.path(seurat_objects_dir,"Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds"))
+mouse_blood_exon_only <- readRDS(file.path(seurat_objects_dir,"Mm_blood_bm_tumor_healthy_forced_cell_determination_exons_only_annotation.rds"))
 
-mouse_il5tg <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
-mouse_il5tg_exon_only <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_exons_only_annotation.rds")
+mouse_il5tg <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds"))
+mouse_il5tg_exon_only <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_exons_only_annotation.rds"))
 
 ##### Generate a df for plotting with the median number of genes per cell type and smaple 
 ### human_colon
@@ -213,7 +211,7 @@ p <- ggplot(df, aes(x=reorder(celltype, median_nFeature, FUN = median), y=as.num
   #geom_point(position = position_dodge(width = 0.75), size = 1.5, alpha = 0.6) + 
   scale_fill_manual(values = c("intronic_and_exonic" = "#E87605", "exonic_only" = "#0F92F4")) +
   stat_compare_means(method = "wilcox.test", size = 3) + theme(axis.text.x = element_text(angle = 45)) 
-ggsave("/scratch/khandl/technical/figures/intron_exon/all_cell_intron_exon_genes.svg", width = 20, height = 8, plot = p)
+ggsave(file.path(gene_mapping_plots_dir, "all_cell_intron_exon_genes.svg"), width = 20, height = 8, plot = p)
 
 ### Plot only Eosinophils and EoP
 df2 <- df[df$celltype %in% c("Eosinophils","EoP"),]
@@ -222,4 +220,4 @@ p <- ggplot(df2, aes(x=reorder(celltype, median_nFeature, FUN = median), y=as.nu
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   scale_fill_manual(values = c("intronic_and_exonic" = "#E87605", "exonic_only" = "#0F92F4")) +
   stat_compare_means(method = "wilcox.test", size = 3) + theme(axis.text.x = element_text(angle = 45)) 
-ggsave("/scratch/khandl/technical/figures/intron_exon/Eos_cell_intron_exon_genes.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(gene_mapping_plots_dir, "Eos_cell_intron_exon_genes.svg"), width = 8, height = 8, plot = p)

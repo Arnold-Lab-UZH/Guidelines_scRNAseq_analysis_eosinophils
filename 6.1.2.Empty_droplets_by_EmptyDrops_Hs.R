@@ -1,16 +1,13 @@
 ########### This code compares forced and the EmptyDrops pipeline ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor;
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### run emptyDrops by cartridge/experiment -> 0.01 FDR cutoff 
 ### P1 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P1_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 set.seed(100)
 # Test ambient means that cells with lower than 100 UMI counts are also tested against the ambient profile 
 df <- emptyDrops(counts_data,test.ambient = TRUE)
@@ -20,9 +17,9 @@ df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
 
 ## Assign cell barcodes based on Sample Tag Calls
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(sample_tag_dir, "Hs_P1_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
-NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "contol",])$Cell_Index
+NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control",])$Cell_Index
 
 ## Extract the right barcodes per sample from the EmptyDrops df 
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -36,14 +33,14 @@ P1_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P1",3,2
 P1_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P1",3,200, "P1_tissue_ctrl","tissue_ctrl","Exp1","patient")
 
 ### P2
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P2_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P2_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P2_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -54,14 +51,14 @@ P2_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P2",3,2
 P2_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P2",3,200, "P2_tissue_ctrl","tissue_ctrl","Exp2","patient")
 
 ### P3
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P3_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P3_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(sample_tag_dir, "Hs_P3_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -72,14 +69,14 @@ P3_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P3",3,2
 P3_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P3",3,200, "P3_tissue_ctrl","tissue_ctrl","Exp3","patient")
 
 ### P4
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P4_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P4_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(sample_tag_dir, "Hs_P4_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -90,14 +87,14 @@ P4_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P4",3,2
 P4_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P4",3,200, "P4_tissue_ctrl","tissue_ctrl","Exp4","patient")
 
 ### P5
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P5_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P5_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(sample_tag_dir, "Hs_P5_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -108,14 +105,14 @@ P5_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P5",3,2
 P5_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P5",3,200, "P5_tissue_ctrl","tissue_ctrl","Exp5","patient")
 
 ### P6
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P6_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P6_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(sample_tag_dir, "Hs_P6_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_control",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -126,14 +123,14 @@ P6_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P6",3,2
 P6_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P6",3,200, "P6_tissue_ctrl","tissue_ctrl","Exp7","patient")
 
 ### P7
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P7_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P7_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
 table(df$is.cell) 
 df <- as.data.frame(df)
 df <- df[df$is.cell == TRUE,]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(sample_tag_dir, "Hs_P7_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -151,7 +148,7 @@ table(df$is.cell)
 df <- as.data.frame(df)
 
 ### Extract Eos to plot them in the EmptyDrops plot 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 # Extract eosinophil specific cell barcodes 
 Idents(obj) <- "annotation"
@@ -202,13 +199,13 @@ patients$cell_enrichment  <- "CD45"
 patients <- subset(patients, subset = percent.mt < 25)
 
 ##### Load annotated object from BD forced pipeline 
-obj_forced <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_forced <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Clustering 
 ### Pre-processing 
 obj <- patients
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -220,7 +217,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 obj_emptyDrops <- obj
 
@@ -271,8 +268,8 @@ obj_emptyDrops@meta.data <- obj_emptyDrops@meta.data %>%
 table(obj_emptyDrops$annotation)
 DimPlot(obj_emptyDrops, group.by = "annotation", label = TRUE)
 
-p1 <- DimPlot(obj_forced, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
-p2 <- DimPlot(obj_emptyDrops, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+p1 <- DimPlot(obj_forced, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
+p2 <- DimPlot(obj_emptyDrops, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 p1 + p2
 
 # Remove NA 
@@ -281,7 +278,7 @@ obj_emptyDrops <- subset(obj_emptyDrops, idents = c("B","DCs","Endothelial","Eos
                                                     "Monocytes","Neutrophils","PCs","T","TAMs","Undefined"))
 
 ##### save object 
-saveRDS(obj_emptyDrops, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_emptyDrops_determination_with_intronic_reads_annotated.rds")
+saveRDS(obj_emptyDrops, file.path(seurat_objects_dir, "Hs_tumor_NAT_emptyDrops_determination_with_intronic_reads_annotated.rds"))
 
 
 

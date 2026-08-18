@@ -1,39 +1,36 @@
 ########### This code compares wilcox, MAST and DESeq2 statistical approaches for DEGs in eosinophils against macrophages ##########
 ### Datasets used: GSE282765
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+##### link to libraries and functions
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load data 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 Idents(obj) <- "reads"
 obj <- subset(obj, idents = "intronic_and_exonic")
 Idents(obj) <- "cell_determination"
 obj <- subset(obj, idents = "forced")
 
 ### wilcox
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "annotation"
-markers <- FindMarkers(object = obj, ident.1 = "Eosinophils",ident.2 ="Macrophages", only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
-write.csv(markers, "/scratch/khandl/technical/figures/Eos_marker/Eos_marker_Hs_NAT_tumor_GSE282765_wilcox_Eos_vs_Mac.csv")
+markers <- FindMarkers(object = obj, ident.1 = "Eosinophils",ident.2 ="Macrophages", only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
+write.csv(markers, file.path(eos_marker_tables_dir, "Eos_marker_Hs_NAT_tumor_GSE282765_wilcox_Eos_vs_Mac.csv"))
 
 ### MAST
-markers <- FindMarkers(object = obj,  ident.1 = "Eosinophils",ident.2 ="Macrophages", only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data",test.use = "MAST", latent.vars = c("nFeature_RNA","nCount_RNA"))
-write.csv(markers, "/scratch/khandl/technical/figures/Eos_marker/Eos_marker_Hs_NAT_tumor_GSE282765_MAST_Eos_vs_Mac.csv")
+markers <- FindMarkers(object = obj,  ident.1 = "Eosinophils",ident.2 ="Macrophages", only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data",test.use = "MAST", latent.vars = "nFeature_RNA")
+write.csv(markers, file.path(eos_marker_tables_dir, "Eos_marker_Hs_NAT_tumor_GSE282765_MAST_Eos_vs_Mac.csv"))
 
 ### DESeq2 
 pb <- AggregateExpression(obj, assays = "RNA", return.seurat = T, group.by = c("condition","annotation"))
 Idents(pb) <- "annotation"
-markers <- FindMarkers(object = pb, ident.1 = "Eosinophils",ident.2 = "Macrophages", only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data",test.use = c("DESeq2"))
-write.csv(markers, "/scratch/khandl/technical/figures/Eos_marker/Eos_marker_Hs_NAT_tumor_GSE282765_DESeq2_Eos_vs_Mac.csv")
+markers <- FindMarkers(object = pb, ident.1 = "Eosinophils",ident.2 = "Macrophages", only.pos = FALSE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", test.use ="DESeq2")
+write.csv(markers, file.path(eos_marker_tables_dir, "Eos_marker_Hs_NAT_tumor_GSE282765_DESeq2_Eos_vs_Mac.csv"))
 
 ### Compare Eosinophil markers 
-wilcox <- read.csv( "/scratch/khandl/technical/figures/Eos_marker/Eos_marker_Hs_NAT_tumor_GSE282765_wilcox_Eos_vs_Mac.csv")
-MAST <- read.csv( "/scratch/khandl/technical/figures/Eos_marker/Eos_marker_Hs_NAT_tumor_GSE282765_MAST_Eos_vs_Mac.csv")
-DESeq2 <- read.csv( "/scratch/khandl/technical/figures/Eos_marker/Eos_marker_Hs_NAT_tumor_GSE282765_DESeq2_Eos_vs_Mac.csv")
+wilcox <- read.csv( file.path(eos_marker_tables_dir, "Eos_marker_Hs_NAT_tumor_GSE282765_wilcox_Eos_vs_Mac.csv"))
+MAST <- read.csv( file.path(eos_marker_tables_dir, "Eos_marker_Hs_NAT_tumor_GSE282765_MAST_Eos_vs_Mac.csv"))
+DESeq2 <- read.csv( file.path(eos_marker_tables_dir, "Eos_marker_Hs_NAT_tumor_GSE282765_DESeq2_Eos_vs_Mac.csv"))
 
 wilcox <- wilcox[wilcox$p_val_adj <= 0.05 & wilcox$avg_log2FC >0,]
 wilcox_top10 <- wilcox[order(-wilcox$avg_log2FC), ][1:10, ]
@@ -76,7 +73,7 @@ p <- ggplot(DESeq2, aes(x = avg_log2FC, y = -log10(p_val_adj))) +
     axis.line = element_line(color = "black", linewidth = 0.8),
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.8)
   )
-ggsave("/scratch/khandl/technical/figures/Eos_marker/DESeq2_scatter.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(eos_marker_plots_dir, "DESeq2_scatter.svg"), width = 10, height = 8, plot = p)
 
 p <- ggplot(wilcox, aes(x = avg_log2FC, y = -log10(p_val_adj))) +
   geom_point(aes(color = X %in% genes_to_label)) + 
@@ -91,7 +88,7 @@ p <- ggplot(wilcox, aes(x = avg_log2FC, y = -log10(p_val_adj))) +
     axis.line = element_line(color = "black", linewidth = 0.8),
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.8)
   )
-ggsave("/scratch/khandl/technical/figures/Eos_marker/wilcox_scatter.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(eos_marker_plots_dir, "wilcox_scatter.svg"), width = 10, height = 8, plot = p)
 
 p <- ggplot(MAST, aes(x = avg_log2FC, y = -log10(p_val_adj))) +
   geom_point(aes(color = X %in% genes_to_label)) + 
@@ -106,9 +103,5 @@ p <- ggplot(MAST, aes(x = avg_log2FC, y = -log10(p_val_adj))) +
     axis.line = element_line(color = "black", linewidth = 0.8),
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.8)
   )
-ggsave("/scratch/khandl/technical/figures/Eos_marker/MAST_scatter.svg", width = 10, height = 8, plot = p)
-
-
-
-
+ggsave(file.path(eos_marker_plots_dir, "MAST_scatter.svg"), width = 10, height = 8, plot = p)
 

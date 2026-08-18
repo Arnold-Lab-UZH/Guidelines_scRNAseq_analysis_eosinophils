@@ -1,15 +1,13 @@
 ########## This code uses scCDC for ambient RNA quantification  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.5.Functions_ambient_RNA_plotting.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.5.Functions_ambient_RNA_plotting.R"))
 
 ##### Load R object
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds"))
 
 ##### Run for each expriment/cartridge separate  
 ### Exp 1 
@@ -19,7 +17,7 @@ sub <- subset(obj, idents = "Exp1")
 ## Define contamination-causing genes (GCGs) 
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp1 = ContaminationCorrection(sub,rownames(GCGs))
 
@@ -28,7 +26,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp2")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp2 = ContaminationCorrection(sub,rownames(GCGs))
 
@@ -37,7 +35,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp3")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp3 = ContaminationCorrection(sub,rownames(GCGs))
 
@@ -46,7 +44,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp4")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp4 = ContaminationCorrection(sub,rownames(GCGs))
 
@@ -55,25 +53,25 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp5")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp5 = ContaminationCorrection(sub,rownames(GCGs))
 
-### Exp 7 
+### Exp 7 = patient 6
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp7")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp6 = ContaminationCorrection(sub,rownames(GCGs))
 
-### Exp 8 
+### Exp 8 = patient 7
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp8")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 exp7 = ContaminationCorrection(sub,rownames(GCGs))
 
@@ -101,7 +99,7 @@ merged <- JoinLayers(merged)
 ### Pre-processing 
 DefaultAssay(merged) <- "RNA"
 merged[["RNA"]] <- split(merged[["RNA"]], f = merged$experiment)
-merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1)
+merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1)
 merged <- FindVariableFeatures(merged)
 merged <- ScaleData(merged,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 merged <- RunPCA(merged, features = VariableFeatures(object =merged), npcs = 20, verbose = FALSE)
@@ -113,13 +111,13 @@ ElbowPlot(merged)
 merged <- FindNeighbors(merged, reduction = "integrated.mnn", dims = 1:15)
 merged <- FindClusters(merged, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 merged <- RunUMAP(merged, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(merged,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(merged,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 merged <- JoinLayers(merged)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
 Idents(merged) <- "mnn.clusters"
-markers <- FindAllMarkers(object = merged, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = merged, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =5, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -152,7 +150,7 @@ new.cluster.ids <- c("Neutrophils","T","PCs","Eosinophils", "Mono_DCs_Mac", "low
                      "PCs","T","Mono_DCs_Mac","Undefined","Mixed","Fibroblasts",
                      "Mast","Mixed","Mixed","Mixed")
 merged$annotation <- plyr::mapvalues(x = merged$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(merged, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+DimPlot(merged, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 Idents(merged) <- "annotation"
 DotPlot(merged, features = unique(c("TPSAB1","KIT","TPSB2", # Mast cells 
@@ -183,7 +181,7 @@ sub_celltype <- subset(subCl,idents = c( "Mono_DCs_Mac_0","Mono_DCs_Mac_1","Mono
 DimPlot(sub_celltype, reduction = "umap.mnn")
 
 Idents(sub_celltype) <- "sub.cluster"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 VlnPlot(sub_celltype, features = "nFeature_RNA", pt.size = 0)
 FeaturePlot(sub_celltype, features = "CD1C")
@@ -200,7 +198,7 @@ new.cluster.ids <- c("B","Endothelial","Eosinophils","Epithelial",
                      "Macrophages","Mono_DCs","TAMs","Mixed","Mixed",
                      "Neutrophils","PCs","T","Undefined")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster Mono_DCs
 Idents(subCl) <- "annotation"
@@ -213,7 +211,7 @@ sub_celltype <- subset(subCl,idents = c( "Mono_DCs_0","Mono_DCs_1","Mono_DCs_2")
 DimPlot(sub_celltype, reduction = "umap.mnn")
 
 Idents(sub_celltype) <- "sub.cluster"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 VlnPlot(sub_celltype, features = "nFeature_RNA", pt.size = 0)
 FeaturePlot(sub_celltype, features = "CD1C")
@@ -230,7 +228,7 @@ new.cluster.ids <- c("B","Endothelial","Eosinophils","Epithelial",
                      "DCs","Monocytes","Monocytes",
                      "Neutrophils","PCs","T","TAMs", "Undefined")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ##### Check annotation
 Idents(subCl) <- "annotation"
@@ -253,11 +251,11 @@ DotPlot(subCl, features = unique(c("TPSAB1","KIT","TPSB2", # Mast cells
 )) )+ theme(axis.text.x = element_text(angle = 90)) 
 
 ##### Save object 
-saveRDS(subCl, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
+saveRDS(subCl, file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds"))
 
 ##### control ambient RNA correction 
-obj_scCDC <- readRDS( "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
-obj_RNA <- readRDS( "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds")
+obj_scCDC <- readRDS(file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds"))
+obj_RNA <- readRDS(file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds"))
 
 Idents(obj_scCDC) <- "annotation"
 obj_scCDC <- subset(obj_scCDC, idents = c("PCs","Eosinophils"))
@@ -306,7 +304,7 @@ p <- ggplot(df1, aes(x = cellType, y =  percent, fill = assay)) +
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   )
-ggsave("/scratch/khandl/technical/figures/Doublet/PCmarkers_after_sc.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "PCmarkers_after_sc.svg"), width = 10, height = 8, plot = p)
 
 ## Plot marker labels of Eosinophil markers 
 df1 <- df[df$markerLabels %in% "Eos_Marker",]
@@ -326,6 +324,6 @@ p <- ggplot(df1, aes(x = cellType, y =  percent, fill = assay)) +
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   ) +  ylim(0,100)
-ggsave("/scratch/khandl/technical/figures/Doublet/EosMarker_after_sc.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "EosMarker_after_sc.svg"), width = 10, height = 8, plot = p)
 
 

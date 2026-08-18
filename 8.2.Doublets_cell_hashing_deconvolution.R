@@ -1,22 +1,20 @@
 ######### This code identifies and analyses doublets based on sample tag cell hashing results ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Extract multiplets from Unfiltered matrices based on Sample Tag Calls 
 ### Load Sample Tag Calls and extract Multiplets Cell IDs 
-P1 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
-P2 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
-P3 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
-P4 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
-P5 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
-P6 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
-P7 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
+P1 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P1_Sample_Tag_Calls.csv"),skip = 7)
+P2 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P2_Sample_Tag_Calls.csv"),skip = 7)
+P3 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P3_Sample_Tag_Calls.csv"),skip = 7)
+P4 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P4_Sample_Tag_Calls.csv"),skip = 7)
+P5 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P5_Sample_Tag_Calls.csv"),skip = 7)
+P6 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P6_Sample_Tag_Calls.csv"),skip = 7)
+P7 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir,"Hs_P7_Sample_Tag_Calls.csv"),skip = 7)
 
 P1 <- P1[P1$Sample_Tag %in% "Multiplet",]$Cell_Index
 P2 <- P2[P2$Sample_Tag %in% "Multiplet",]$Cell_Index
@@ -28,37 +26,37 @@ P7 <- P7[P7$Sample_Tag %in% "Multiplet",]$Cell_Index
 
 ### Load unfiltered matrices and extract Multiplets Cell IDs and generate Seurat objects 
 ## P1 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P1_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P1]
 P1_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P1",3,200,  "P1_multiplet","multiplet","Exp1","patient")
 
 ## P2 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P2_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P2_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P2]
 P2_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P2",3,200,  "P2_multiplet","multiplet","Exp2","patient")
 
 ## P3 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P3_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P3_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P3]
 P3_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P3",3,200,  "P3_multiplet","multiplet","Exp3","patient")
 
 ## P4 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P4_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P4_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P4]
 P4_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P4",3,200,  "P4_multiplet","multiplet","Exp4","patient")
 
 ## P5 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P5_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P5_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P5]
 P5_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P5",3,200,  "P5_multiplet","multiplet","Exp5","patient")
 
 ## P6 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P6_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P6_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P6]
 P6_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P6",3,200,  "P6_multiplet","multiplet","Exp7","patient")
 
 ## P7 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P7_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P7_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data <- counts_data[,colnames(counts_data) %in% P7]
 P7_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P7",3,200,  "P7_multiplet","multiplet","Exp8","patient")
 
@@ -75,10 +73,10 @@ obj <- subset(obj, subset = percent.mt < 25)
 length(obj@active.ident) # 4943 Multiplets 
 
 ## Save Multiplets Seurat object 
-saveRDS(obj,"/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_multiplets_from_cell_hashing.rds")
+saveRDS(obj,file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_multiplets_from_cell_hashing.rds"))
 
 ##### Clustering 
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,  margin = 1,assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -97,7 +95,7 @@ colnames(df) <- colnames(obj)
 df <- as.data.frame(df)
 
 ### Generate reference (need NAT, tumor)
-reference <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+reference <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 Idents(reference) <- "annotation"
 reference <- subset(reference, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial","Fibroblasts", "Macrophages",
@@ -149,7 +147,7 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
 
 ## Save the results for each doublet in a datframe 
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_deconvolution_result.csv")
+write.csv(deconvolution_crc_df,file.path(doublet_tables_dir, "cell_hashing_doublets_deconvolution_result.csv"))
 
 ### Add the deconvolution result to the doublet containing Seurat object  
 obj <- subset(obj, cells = colnames(df_matrix_filtered))
@@ -176,7 +174,8 @@ obj@meta.data <- obj@meta.data %>%
     TRUE ~ NA_character_))
 
 ## Add single Eos as a control  
-all_cells <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+all_cells <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
+
 Idents(all_cells) <- "annotation"
 singlets <- subset(all_cells, idents = c("Eosinophils"))
 singlets$eos_scdc_prop_range <- singlets$annotation
@@ -189,11 +188,11 @@ sub <- subset(obj2, idents = c("cat0_25","cat25_50","cat50_75","cat75_100","Eosi
 p <- VlnPlot(sub, features= "nFeature_RNA",pt.size = 0, cols = c("#E5D6D6","#E2ACAC" ,"#E06870","#C61825" ,"#7C0A12" ) )+  
   theme_classic() + theme(text = element_text(size=20, colour = "black")) + RotatedAxis() 
 print(p)
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_eos_doublet_score_nfeatures.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_eos_doublet_score_nfeatures.svg"), width = 8, height = 8, plot = p)
 
 p <- DotPlot(sub, features = c("CLC","CCR3","ALOX15","ADGRE1","DACH1", "CD3E","ICOS","CD4", "C1QC","C1QB","VCAN","FN1","FCGR3B"),dot.scale = 15, scale = FALSE, assay = "RNA",cols = c("white","darkred")) + 
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + theme(axis.text.x = element_text(angle = 90)) 
-ggsave("/scratch/khandl/technical/figures/Doublet/Eos_hashing_doulbets_DotPlot.svg", width = 10, height = 6, plot = p)
+ggsave(file.path(doublet_plots_dir, "Eos_hashing_doulbets_DotPlot.svg"), width = 10, height = 6, plot = p)
 
 ##### Plot the number of features across different predictions of Macrophages 
 deconvolution_crc_df_Mac_cat1 <- deconvolution_crc_df[deconvolution_crc_df$Macrophages ==0 &deconvolution_crc_df$Macrophages <= 0.25 ,]
@@ -222,7 +221,7 @@ sub <- subset(obj2, idents = c("cat0_25","cat25_50","cat50_75","cat75_100","Macr
 p <- VlnPlot(sub, features= "nFeature_RNA",pt.size = 0, cols = c("#D1F2DE","#7DE2A6" ,"#1F9B51","#087505" ,"#224421" ) )+  
   theme_classic() + theme(text = element_text(size=20, colour = "black")) + RotatedAxis() 
 print(p)
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_Macs_doublet_score_nfeatures.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_Macs_doublet_score_nfeatures.svg"), width = 8, height = 8, plot = p)
 
 ##### Extract category 25-50 
 Idents(obj) <- "eos_scdc_prop_range"
@@ -230,17 +229,17 @@ sub <- subset(obj, idents = c("cat25_50","cat50_75"))
 
 ### visualise markers 
 p <- FeaturePlot(sub, features = c("CLC","ICOS","C1QC","FCGR3B"))
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_doulbet_marker.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_doulbet_marker.svg"), width = 10, height = 8, plot = p)
 
 ### Visualize deconvolution score to verify 
 p <- FeaturePlot(sub, features = "Neutrophils",cols = c("lightgrey", "#5D0EAF"))
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_Neutrophils_score.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_doublets_Neutrophils_score.svg"), width = 8, height = 8, plot = p)
 
 p <- FeaturePlot(sub, features = "Macrophages",cols = c("lightgrey", "#2D4F08"))
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_Mac_score.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_doublets_Mac_score.svg"), width = 8, height = 8, plot = p)
 
 p <- FeaturePlot(sub, features = "Eosinophils",cols = c("lightgrey", "#E23128"))
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_Eosinophils_score.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_doublets_Eosinophils_score.svg"), width = 8, height = 8, plot = p)
 
 p <- FeaturePlot(sub, features = "T",cols = c("lightgrey", "#0C52A5"))
-ggsave("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_T_score.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "cell_hashing_doublets_T_score.svg"), width = 8, height = 8, plot = p)

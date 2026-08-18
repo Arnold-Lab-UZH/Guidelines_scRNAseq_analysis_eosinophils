@@ -1,58 +1,56 @@
 ########### This code compares forced BD pipeline with two different gene mapping strategies (exons + introns and exons only )  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor;
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+##### link to libraries and functions
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Load annotated object from BD forced pipeline with intron and exon mapping 
-obj_reference <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_reference <- readRDS(file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Seurat object generation from BD forced exons only  
 ### Forced cell determination exonic reads only 
 ## P1 
-P1_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P1_Hs_tumor_forced_cell_determination_exonic_only_ST02_Expression_Data.st"), 
+P1_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P1_Hs_tumor_forced_cell_determination_exonic_only_ST02_Expression_Data.st"), 
                                   "P1",3,200,  "P1_tumor","tumor","Exp1","patient")
-P1_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P1_Hs_NAT_forced_cell_determination_exonic_only_ST01_Expression_Data.st"), 
+P1_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P1_Hs_NAT_forced_cell_determination_exonic_only_ST01_Expression_Data.st"), 
                                     "P1",3,200, "P1_tissue_ctrl","tissue_ctrl","Exp1","patient")
 
 ## P2 
-P2_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P2_Hs_tumor_forced_cell_determination_exonic_only_ST07_Expression_Data.st"), 
+P2_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P2_Hs_tumor_forced_cell_determination_exonic_only_ST07_Expression_Data.st"), 
                                   "P2",3,200,  "P2_tumor","tumor","Exp2","patient")
-P2_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P2_Hs_NAT_forced_cell_determination_exonic_only_ST08_Expression_Data.st"), 
+P2_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P2_Hs_NAT_forced_cell_determination_exonic_only_ST08_Expression_Data.st"), 
                                     "P2",3,200,  "P2_tissue_ctrl","tissue_ctrl","Exp2","patient")
 
 ## P3
-P3_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P3_Hs_tumor_forced_cell_determination_exonic_only_ST09_Expression_Data.st"), 
+P3_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P3_Hs_tumor_forced_cell_determination_exonic_only_ST09_Expression_Data.st"), 
                                   "P3",3,200,  "P3_tumor","tumor","Exp3","patient")
-P3_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P3_Hs_NAT_forced_cell_determination_exonic_only_ST10_Expression_Data.st"), 
+P3_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P3_Hs_NAT_forced_cell_determination_exonic_only_ST10_Expression_Data.st"), 
                                     "P3",3,200,  "P3_tissue_ctrl","tissue_ctrl","Exp3","patient")
 
 ## P4
-P4_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P4_Hs_tumor_forced_cell_determination_exonic_only_ST04_Expression_Data.st"), 
+P4_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P4_Hs_tumor_forced_cell_determination_exonic_only_ST04_Expression_Data.st"), 
                                   "P4",3,200,  "P4_tumor","tumor","Exp4","patient")
-P4_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P4_Hs_NAT_forced_cell_determination_exonic_only_ST03_Expression_Data.st"), 
+P4_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P4_Hs_NAT_forced_cell_determination_exonic_only_ST03_Expression_Data.st"), 
                                     "P4",3,200,  "P4_tissue_ctrl","tissue_ctrl","Exp4","patient")
 
 ## P5
-P5_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P5_Hs_tumor_forced_cell_determination_exonic_only_ST07_Expression_Data.st"), 
+P5_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P5_Hs_tumor_forced_cell_determination_exonic_only_ST07_Expression_Data.st"), 
                                   "P5",3,200,  "P5_tumor","tumor","Exp5","patient")
-P5_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P5_Hs_NAT_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
+P5_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P5_Hs_NAT_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
                                     "P5",3,200,  "P5_tissue_ctrl","tissue_ctrl","Exp5","patient")
 
 ## P6
-P6_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P6_Hs_tumor_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
+P6_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P6_Hs_tumor_forced_cell_determination_exonic_only_ST06_Expression_Data.st"), 
                                   "P6",3,200,  "P6_tumor","tumor","Exp7","patient")
-P6_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P6_Hs_NAT_forced_cell_determination_exonic_only_ST07_Expression_Data.st"), 
+P6_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P6_Hs_NAT_forced_cell_determination_exonic_only_ST07_Expression_Data.st"), 
                                     "P6",3,200,  "P6_tissue_ctrl","tissue_ctrl","Exp7","patient")
 
 ## P7 
-P7_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Forced_cell_determination_exonic_reads_only", "P7_Hs_tumor_forced_cell_determination_exonic_only_ST12_Expression_Data.st"), 
+P7_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_forced_exon_only_dir, "P7_Hs_tumor_forced_cell_determination_exonic_only_ST12_Expression_Data.st"), 
                                   "P7",3,200,  "P7_tumor","tumor","Exp8","patient")
-P7_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Forced_cell_determination_exonic_reads_only", "P7_Hs_NAT_forced_cell_determination_exonic_only_ST11_Expression_Data.st"), 
+P7_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_forced_exon_only_dir, "P7_Hs_NAT_forced_cell_determination_exonic_only_ST11_Expression_Data.st"), 
                                     "P7",3,200,  "P7_tissue_ctrl","tissue_ctrl","Exp8","patient")
 
 ### Merge samples
@@ -71,10 +69,10 @@ patients$technology <- "BD_Rhapsody"
 patients$cell_enrichment  <- "CD45"
 
 ### Save object
-saveRDS(patients, file = "/scratch/khandl/technical/seurat_objects/Forced_cell_determination_exonic_reads_only_Hs_NAT_tumor.rds")
+saveRDS(patients, file = file.path(seurat_objects_dir,"Forced_cell_determination_exonic_reads_only_Hs_NAT_tumor.rds"))
 
 ##### Load exons only object 
-obj <- readRDS("/scratch/khandl/4.Technical/Forced_cell_determination_exonic_reads_only_Hs_NAT_tumor.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Forced_cell_determination_exonic_reads_only_Hs_NAT_tumor.rds"))
 
 ### Apply mitochondrial cutoff 
 obj <- subset(obj, subset = percent.mt < 25)
@@ -82,7 +80,7 @@ obj <- subset(obj, subset = percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -94,7 +92,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
 ##### Transfer of annotation based on matching cell IDs 
@@ -144,8 +142,8 @@ obj@meta.data <- obj@meta.data %>%
 table(obj$annotation)
 DimPlot(obj, group.by = "annotation", label = TRUE)
 
-p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
-p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
+p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 p1 + p2
 
 # Remove NA
@@ -154,7 +152,6 @@ obj <- subset(obj, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial"
                               "Monocytes","Neutrophils","PCs","T","TAMs","Undefined"))
 
 ##### save object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_exons_only_annotation.rds")
-
+saveRDS(obj, file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_exons_only_annotation.rds"))
 
 

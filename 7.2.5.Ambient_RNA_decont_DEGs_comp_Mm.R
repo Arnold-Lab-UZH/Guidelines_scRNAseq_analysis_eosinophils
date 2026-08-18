@@ -1,17 +1,15 @@
 ########## This code tests the quality of decontamination tools by their influence on DEGs between conditions  ##########
 ### Datasets used: GSE282765; Mm colon healthy, CRC tumor, NAT, disseminated 
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.3.Functions_gene_expression.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.3.Functions_gene_expression.R"))
 
 ##### Load R objects 
-obj_RNA_scCDC <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_scCDC.rds")
-obj_decontX <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_decontX.rds")
-obj_SoupX <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_SoupX.rds")
+obj_RNA_scCDC <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_scCDC.rds"))
+obj_decontX <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_decontX.rds"))
+obj_SoupX <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_SoupX.rds"))
 
 ### Extract Eosinophils 
 Idents(obj_RNA_scCDC) <- "annotation"
@@ -28,26 +26,26 @@ obj_SoupX <- JoinLayers(obj_SoupX)
 
 ##### DEGs between eosinopohils between tumor and healthy colon across different decontamination assays 
 Idents(obj_RNA_scCDC) <- "condition"
-DEG_to_csv_two_cond(obj_RNA_scCDC,"RNA", "tumor_wt","adult_colon_wt",FALSE,0.25,"/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_RNA.csv")
-DEG_to_csv_two_cond(obj_RNA_scCDC,"Corrected", "tumor_wt","adult_colon_wt",FALSE,0.25,"/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_scCDC.csv")
+DEG_to_csv_two_cond(obj_RNA_scCDC,"RNA", "tumor_wt","adult_colon_wt",FALSE,0.25,file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_RNA.csv"))
+DEG_to_csv_two_cond(obj_RNA_scCDC,"Corrected", "tumor_wt","adult_colon_wt",FALSE,0.25,file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_scCDC.csv"))
 
 Idents(obj_SoupX) <- "condition"
-DEG_to_csv_two_cond(obj_SoupX,"RNA", "tumor_wt","adult_colon_wt",FALSE,0.25,"/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_SoupX.csv")
+DEG_to_csv_two_cond(obj_SoupX,"RNA", "tumor_wt","adult_colon_wt",FALSE,0.25,file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_SoupX.csv"))
 
 Idents(obj_decontX) <- "condition"
-DEG_to_csv_two_cond(obj_decontX,"RNA", "tumor_wt","adult_colon_wt",FALSE,0.25,"/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_decontX.csv")
+DEG_to_csv_two_cond(obj_decontX,"RNA", "tumor_wt","adult_colon_wt",FALSE,0.25,file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_decontX.csv"))
 
 ##### Extract Significnat genes high in tumor or colon and then intersect them 
-df_RNA <- read.csv("/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_RNA.csv")
+df_RNA <- read.csv(file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_RNA.csv"))
 df_RNA <- df_RNA[df_RNA$p_val_adj <= 0.05,]
 
-df_decontX <- read.csv("/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_decontX.csv")
+df_decontX <- read.csv(file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_decontX.csv"))
 df_decontX <- df_decontX[df_decontX$p_val_adj <= 0.05,]
 
-df_SoupX <- read.csv("/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_SoupX.csv")
+df_SoupX <- read.csv(file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_SoupX.csv"))
 df_SoupX <- df_SoupX[df_SoupX$p_val_adj <= 0.05,]
 
-df_scCDC <- read.csv("/scratch/khandl/technical/figures/Ambient_RNA/DEGs_eos_tumor_vs_colon_healthy_assay_scCDC.csv")
+df_scCDC <- read.csv(file.path(ambient_rna_tables_dir, "DEGs_eos_tumor_vs_colon_healthy_assay_scCDC.csv"))
 df_scCDC <- df_scCDC[df_scCDC$p_val_adj <= 0.05,]
 
 x <- list( "RNA" = df_RNA$X, "decontX" =df_decontX$X,

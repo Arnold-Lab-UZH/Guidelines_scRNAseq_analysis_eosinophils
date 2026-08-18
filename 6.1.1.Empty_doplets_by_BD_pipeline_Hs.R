@@ -1,58 +1,56 @@
 ########### This code compares forced and automatic BD pipeline ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor;
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Load annotated object from BD forced pipeline 
-obj_forced <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_forced <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Seurat object generation from BD automatic 
 ### Automatic cell determination - intronic and exonic reads 
 ## P1 
-P1_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P1_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST02_Expression_Data.st"), 
-                                  "P1",3,200,  "P1_tumor","tumor","Exp1","patient")
-P1_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P1_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST01_Expression_Data.st"), 
+P1_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P1_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST02_Expression_Data.st"), 
+                                    "P1",3,200,  "P1_tumor","tumor","Exp1","patient")
+P1_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P1_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST01_Expression_Data.st"), 
                                     "P1",3,200, "P1_tissue_ctrl","tissue_ctrl","Exp1","patient")
 
 ## P2 
-P2_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P2_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST07_Expression_Data.st"), 
+P2_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P2_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST07_Expression_Data.st"), 
                                   "P2",3,200,  "P2_tumor","tumor","Exp2","patient")
-P2_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P2_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST08_Expression_Data.st"), 
+P2_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P2_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST08_Expression_Data.st"), 
                                     "P2",3,200,  "P2_tissue_ctrl","tissue_ctrl","Exp2","patient")
 
 ## P3
-P3_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P3_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST09_Expression_Data.st"), 
+P3_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P3_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST09_Expression_Data.st"), 
                                   "P3",3,200,  "P3_tumor","tumor","Exp3","patient")
-P3_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P3_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST10_Expression_Data.st"), 
+P3_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P3_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST10_Expression_Data.st"), 
                                     "P3",3,200,  "P3_tissue_ctrl","tissue_ctrl","Exp3","patient")
 
 ## P4
-P4_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P4_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST04_Expression_Data.st"), 
+P4_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P4_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST04_Expression_Data.st"), 
                                   "P4",3,200,  "P4_tumor","tumor","Exp4","patient")
-P4_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P4_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST03_Expression_Data.st"), 
+P4_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P4_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST03_Expression_Data.st"), 
                                     "P4",3,200,  "P4_tissue_ctrl","tissue_ctrl","Exp4","patient")
 
 ## P5
-P5_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P5_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST07_Expression_Data.st"), 
+P5_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P5_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST07_Expression_Data.st"), 
                                   "P5",3,200,  "P5_tumor","tumor","Exp5","patient")
-P5_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P5_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST06_Expression_Data.st"), 
+P5_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P5_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST06_Expression_Data.st"), 
                                     "P5",3,200,  "P5_tissue_ctrl","tissue_ctrl","Exp5","patient")
 
 ## P6
-P6_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P6_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST06_Expression_Data.st"), 
+P6_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P6_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST06_Expression_Data.st"), 
                                   "P6",3,200,  "P6_tumor","tumor","Exp7","patient")
-P6_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P6_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST07_Expression_Data.st"), 
+P6_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P6_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST07_Expression_Data.st"), 
                                     "P6",3,200,  "P6_tissue_ctrl","tissue_ctrl","Exp7","patient")
 
 ## P7 
-P7_tumor <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_tumor/Automatic_cell_determination_intronic_and_exonic_reads", "P7_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST12_Expression_Data.st"), 
+P7_tumor <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_tumor_automatic_intron_exon_dir, "P7_Hs_tumor_automatic_cell_determination_intronic_and_exonic_ST12_Expression_Data.st"), 
                                   "P7",3,200,  "P7_tumor","tumor","Exp8","patient")
-P7_control <- create_seurat_Hs_data(file.path("/scratch/khandl/technical", "Hs_CRC_NAT/Automatic_cell_determination_intronic_and_exonic_reads", "P7_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST11_Expression_Data.st"), 
+P7_control <- create_seurat_Hs_data(file.path(raw_data_GSE282765_Hs_CRC_NAT_automatic_intron_exon_dir, "P7_Hs_NAT_automatic_cell_determination_intronic_and_exonic_ST11_Expression_Data.st"), 
                                     "P7",3,200,  "P7_tissue_ctrl","tissue_ctrl","Exp8","patient")
 
 ### Merge samples
@@ -71,10 +69,10 @@ patients$technology <- "BD_Rhapsody"
 patients$cell_enrichment  <- "CD45"
 
 ### Save object
-saveRDS(patients, file = "/scratch/khandl/4.Technical/Automatic_cell_determination_exonic_and_intronic_reads_Hs_NAT_tumor.rds")
+saveRDS(patients, file = file.path(data_dir, "Automatic_cell_determination_exonic_and_intronic_reads_Hs_NAT_tumor.rds"))
 
 ##### Load BD automatic object 
-obj_autom <- readRDS( "/scratch/khandl/4.Technical/Automatic_cell_determination_exonic_and_intronic_reads_Hs_NAT_tumor.rds")
+obj_autom <- readRDS( file.path(data_dir, "Automatic_cell_determination_exonic_and_intronic_reads_Hs_NAT_tumor.rds"))
 
 ### Apply mitochondrial cutoff 
 obj_autom <- subset(obj_autom, subset = percent.mt < 25)
@@ -83,7 +81,7 @@ obj_autom <- subset(obj_autom, subset = percent.mt < 25)
 ### Pre-processing 
 obj <- obj_autom
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -95,7 +93,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 obj_autom <- obj
 
@@ -189,8 +187,8 @@ new.cluster.ids <- c("PCs","T","Neutrophils", "Macrophages","lowQ", "TAMs",
                      "Mixed","Mixed","Mixed","Mast","Mixed",
                      "Mixed","Mixed","Mixed")
 sub$annotation <- plyr::mapvalues(x = sub$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
-p1 <- DimPlot(sub, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
-p2 <- DimPlot(obj_autom, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+p1 <- DimPlot(sub, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
+p2 <- DimPlot(obj_autom, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 p1 + p2
 
 ## Merge objects from the shared cell barcodes and the unique barcodes from BD automatic 
@@ -203,5 +201,5 @@ obj_autom <- merge(obj_autom, sub)
 obj_autom <- JoinLayers(obj_autom)
 
 ##### save object 
-saveRDS(obj_autom, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_automatic_cell_determination_with_intronic_reads_annotated.rds")
+saveRDS(obj_autom, file.path(seurat_objects_dir, "Hs_tumor_NAT_automatic_cell_determination_with_intronic_reads_annotated.rds"))
 

@@ -1,69 +1,65 @@
 ########### This code compares forced BD pipeline with two different gene mapping strategies (exons + introns and exons only )  ##########
 ### Datasets used: GSE182001
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+##### link to libraries and functions
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Load annotated object from BD forced pipeline with intron and exon mapping 
-obj_reference <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_reference <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Seurat object generation from BD forced exons only  
 ### Forced cell determination exonic reads only 
-### forced cell determination - exonic reads only 
 stomach <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical", "Mm_il5tg_steady_state/Forced_cell_determination_exonic_reads_only", "Forced_cell_determination_exonic_only_Mm_il5tg_stomach_ST01_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE182001_forced_exon_only_dir, "Forced_cell_determination_exonic_only_Mm_il5tg_stomach_ST01_Expression_Data.st"), 
   project = "steady_state", condition = "stomach",3,200)
 
 colon <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical", "Mm_il5tg_steady_state/Forced_cell_determination_exonic_reads_only", "Forced_cell_determination_exonic_only_Mm_il5tg_colon_ST02_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE182001_forced_exon_only_dir, "Forced_cell_determination_exonic_only_Mm_il5tg_colon_ST02_Expression_Data.st"), 
   project = "steady_state", condition = "colon",3,200)
 
 small_int <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical", "Mm_il5tg_steady_state/Forced_cell_determination_exonic_reads_only", "Forced_cell_determination_exonic_only_Mm_il5tg_SI_ST03_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE182001_forced_exon_only_dir, "Forced_cell_determination_exonic_only_Mm_il5tg_SI_ST03_Expression_Data.st"), 
   project = "steady_state", condition = "small_int",3,200)
 
 spleen <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical", "Mm_il5tg_steady_state/Forced_cell_determination_exonic_reads_only", "Forced_cell_determination_exonic_only_Mm_il5tg_spleen_ST04_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE182001_forced_exon_only_dir, "Forced_cell_determination_exonic_only_Mm_il5tg_spleen_ST04_Expression_Data.st"), 
   project = "steady_state", condition = "spleen",3,200)
 
 blood <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical", "Mm_il5tg_steady_state/Forced_cell_determination_exonic_reads_only", "Forced_cell_determination_exonic_only_Mm_il5tg_blood_ST08_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE182001_forced_exon_only_dir, "Forced_cell_determination_exonic_only_Mm_il5tg_blood_ST08_Expression_Data.st"), 
   project = "steady_state", condition = "blood",3,200)
 
 bm <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical", "Mm_il5tg_steady_state/Forced_cell_determination_exonic_reads_only", "Forced_cell_determination_exonic_only_Mm_il5tg_bm_ST06_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE182001_forced_exon_only_dir, "Forced_cell_determination_exonic_only_Mm_il5tg_bm_ST06_Expression_Data.st"), 
   project = "steady_state", condition = "bm",3,200)
 
 ### Merge samples
 merged <- merge(stomach, y = c(colon,small_int,spleen,  blood, bm),
                 add.cell.ids = c("stomach","colon","SI","spleen", "blood","bm"))
-meged <- JoinLayers(merged)
+merged <- JoinLayers(merged)
 
 ### Add mitochondrial percentage per cell  
-meged$percent.mt <- PercentageFeatureSet(meged, pattern = "^mt.")
+merged$percent.mt <- PercentageFeatureSet(merged, pattern = "^mt-")
 
 ### Add conditions to metadata 
-meged$cell_determination <- "forced"
-meged$reads <- "exonic_only"
-meged$species <- "Mm"
-meged$technology <- "BD_Rhapsody"
-meged$cell_enrichment  <- "Eosinophils"
+merged$cell_determination <- "forced"
+merged$reads <- "exonic_only"
+merged$species <- "Mm"
+merged$technology <- "BD_Rhapsody"
+merged$cell_enrichment  <- "Eosinophils"
 
 ### Save object
-saveRDS(meged, file = "/scratch/khandl/technical/seurat_objects/Forced_cell_determination_exonic_reads_only_Mm_il5tg_steady_state.rds")
+saveRDS(merged, file = file.path(seurat_objects_dir,"Forced_cell_determination_exonic_reads_only_Mm_il5tg_steady_state.rds"))
 
 ##### Load exons only object 
-obj <- readRDS("/scratch/khandl/4.Technical/Forced_cell_determination_exonic_reads_only_Mm_il5tg_steady_state.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Forced_cell_determination_exonic_reads_only_Mm_il5tg_steady_state.rds"))
 
 ### Apply mitochondrial cutoff 
 obj <- subset(obj, subset = percent.mt < 25)
 
 ##### Clustering 
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -71,7 +67,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "pca", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, algorithm = 2)
 obj <- RunUMAP(obj, reduction = "pca", dims = 1:15)
-DimPlot(obj,reduction = "umap",group.by = "seurat_clusters",raster=FALSE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap",group.by = "seurat_clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
 ##### Transfer of annotation based on matching cell IDs 
@@ -117,8 +113,8 @@ obj@meta.data <- obj@meta.data %>%
 table(obj$annotation)
 DimPlot(obj, group.by = "annotation", label = TRUE)
 
-p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap")
-p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap")
+p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,reduction = "umap")
+p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap")
 p1 + p2
 
 # remove NA 
@@ -127,7 +123,7 @@ obj <- subset(obj, idents = c("Undefined","Endothelial","EoP", "Eosinophils","Ep
                               "lowQ", "Macrophages","Mixed","Neutrophils", "PCs","ProNeutro"))
 
 ### save object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_exons_only_annotation.rds")
+saveRDS(obj, file.path(seurat_objects_dir, "Mm_il5tg_steady_state_forced_cell_determination_exons_only_annotation.rds"))
 
 ########## Annotate eosinophil subtypes additionally ##########
 ### Extract only Eosinophils and EoPs from newly annotated object 
@@ -135,11 +131,11 @@ Idents(obj) <- "annotation"
 obj <- subset(obj, idents = c("Eosinophils","EoP"))
 
 ### Load the reference (intron and exon mapping )
-obj_reference <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_eos_annotation.rds")
+obj_reference <- readRDS(file.path(seurat_objects_dir, "Mm_il5tg_eos_annotation.rds"))
 
 ##### Clustering 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -182,8 +178,8 @@ obj@meta.data <- obj@meta.data %>%
 table(obj$annotation)
 DimPlot(obj, group.by = "annotation", label = TRUE)
 
-p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
-p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+p1 <- DimPlot(obj_reference, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
+p2 <- DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 p1 + p2
 
 # Remove NA
@@ -191,6 +187,6 @@ Idents(obj) <- "annotation"
 obj <- subset(obj, idents = c("circulating","active","basal","immature","progenitor"))
 
 ##### Save object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Mm_il5tg_eos_forced_cell_determination_exons_only_annotation.rds")
+saveRDS(obj, file.path(seurat_objects_dir,"Mm_il5tg_eos_forced_cell_determination_exons_only_annotation.rds"))
 
 

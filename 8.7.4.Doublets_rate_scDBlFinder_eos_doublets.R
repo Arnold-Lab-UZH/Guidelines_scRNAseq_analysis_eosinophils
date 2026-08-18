@@ -1,17 +1,15 @@
 ######### This code analyzes eosinophil contributing doublets based on position in UMAP and marker gene expression from scDBlFinder output ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load seurat objects 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds"))
 
 ##### Add doublet/singlet condition
-scDblFinder_df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
+scDblFinder_df <- read.csv(file.path(doublet_tables_dir, "scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv"))
 doublet_cell_ids <- scDblFinder_df$X
 all_bcs <- rownames(obj@meta.data)
 singlet_cell_ids <- all_bcs[!all_bcs %in% doublet_cell_ids]
@@ -36,7 +34,7 @@ eos_homo <- WhichCells(obj, idents = c("Eos_homo"))
 eos_hetero <- WhichCells(obj, idents = c("Eos_hetero"))
 p <- DimPlot(obj, label=T, group.by="doublet_cond", cells.highlight= list(eos_homo, eos_hetero), 
         cols.highlight = c( "#270CEF","#EFA40F"), cols= "#A39F9F",raster = FALSE)
-ggsave("/scratch/khandl/technical/figures/Doublet/UMAP_hetero_homo_doublets_eos.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "UMAP_hetero_homo_doublets_eos.svg"), width = 8, height = 8, plot = p)
 
 ##### Marker gene expression in eos doublets 
 Idents(obj) <- "doublet_cond"
@@ -44,4 +42,4 @@ sub <- subset(obj, idents = c("Eos_hetero","Eos_homo","Doublet"))
 
 p <- DotPlot(sub, features = c("CLC","CCR3","ALOX15","ADGRE1","DACH1", "CD3E","ICOS","CD4", "C1QC","C1QB","VCAN","FN1","FCGR3B"),dot.scale = 15, scale = FALSE, assay = "RNA",cols = c("white","darkred")) + 
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + theme(axis.text.x = element_text(angle = 90)) 
-ggsave("/scratch/khandl/technical/figures/Doublet/Eos_scDblFinder_homo_hetero.svg", width = 10, height = 6, plot = p)
+ggsave(file.path(doublet_plots_dir, "Eos_scDblFinder_homo_hetero.svg"), width = 10, height = 6, plot = p)

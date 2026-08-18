@@ -1,11 +1,9 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of Mm liver from healthy mice and liver metastasis (AKPS) from GSE216189  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir,"1.2.Functions_Seurat_integration.R"))
 
 ##### Loading of Mouse gene/ensemble IDs to convert ensemble IDs to gene IDs 
 ensembl<-useEnsembl(biomart="ensembl")
@@ -13,44 +11,44 @@ list<-listDatasets(ensembl)
 mart <- useEnsembl(biomart="ensembl", dataset="mmusculus_gene_ensembl",version=100)
 attributes<-listAttributes(mart)
 gene_ids_mouse <- getBM(attributes = c("ensembl_gene_id_version","external_gene_name"), mart = mart)
-write.csv(gene_ids_mouse, "/data/khandl/gene_ids_ensemble_ids_mouse.csv")
+write.csv(gene_ids_mouse, file.path(annotation_tables_dir, "gene_ids_ensemble_ids_mouse.csv"))
 
 ##### Seurat object generation 
-liver_mets1 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM7026580_Mets_sc1.dgecounts.rds", 
-                                              project = "liverMets",3,200, condition = "Liver_mets1",batch = "batch1",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets1 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM7026580_Mets_sc1.dgecounts.rds"), 
+                                          project = "liverMets",3,200, condition = "Liver_mets1",batch = "batch1",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets2 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM7026581_Mets_sc2.dgecounts.rds", 
-                                              project = "liverMets", 3,200,  condition = "Liver_mets2",batch = "batch1",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets2 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM7026581_Mets_sc2.dgecounts.rds"), 
+                                          project = "liverMets", 3,200,  condition = "Liver_mets2",batch = "batch1",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets3 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661394_WT.dgecounts.rds", 
-                                              project = "liverMets",3,200,   condition = "Liver_healthy1",batch = "batch2",tissue_oi = "liver",phenotype_oi <- "healthy")
+liver_mets3 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661394_WT.dgecounts.rds"), 
+                                          project = "liverMets",3,200,   condition = "Liver_healthy1",batch = "batch2",tissue_oi = "liver",phenotype_oi = "healthy")
 
-liver_mets4 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661376_MetsM1.dgecounts.rds", 
-                                              project = "liverMets",3,200,    condition = "Liver_mets3",batch = "batch3",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets4 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661376_MetsM1.dgecounts.rds"), 
+                                          project = "liverMets",3,200,    condition = "Liver_mets3",batch = "batch3",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets5 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661378_MetsM3.dgecounts.rds", 
-                                              project = "liverMets",3,200,  condition = "Liver_mets4",batch = "batch3",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets5 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661378_MetsM3.dgecounts.rds"), 
+                                          project = "liverMets",3,200,  condition = "Liver_mets4",batch = "batch3",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets6 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661380_MetsM4.dgecounts.rds", 
-                                              project = "liverMets",3,200,  condition = "Liver_mets5",batch = "batch3",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets6 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661380_MetsM4.dgecounts.rds"), 
+                                          project = "liverMets",3,200,  condition = "Liver_mets5",batch = "batch3",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets7 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661382_Mets4M1.dgecounts.rds", 
-                                              project = "liverMets",3,200, condition = "Liver_mets6",batch = "batch4",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets7 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661382_Mets4M1.dgecounts.rds"), 
+                                          project = "liverMets",3,200, condition = "Liver_mets6",batch = "batch4",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets8 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661384_Mets4M2.dgecounts.rds", 
-                                              project = "liverMets", 3,200, condition = "Liver_mets7",batch = "batch4",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets8 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661384_Mets4M2.dgecounts.rds"), 
+                                          project = "liverMets", 3,200, condition = "Liver_mets7",batch = "batch4",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets9 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661388_Mets6M1.dgecounts.rds", 
-                                              project = "liverMets",3,200,  condition = "Liver_mets8",batch = "batch5",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets9 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661388_Mets6M1.dgecounts.rds"), 
+                                          project = "liverMets",3,200,  condition = "Liver_mets8",batch = "batch5",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets10 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661390_Mets6M2.dgecounts.rds", 
-                                               project = "liverMets",3,200,  condition = "Liver_mets9",batch = "batch5",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets10 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661390_Mets6M2.dgecounts.rds"), 
+                                           project = "liverMets",3,200,  condition = "Liver_mets9",batch = "batch5",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets11 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661392_Mets6M3.dgecounts.rds", 
-                                               project = "liverMets",3,200,  condition = "Liver_mets10",batch = "batch5",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets11 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661392_Mets6M3.dgecounts.rds"), 
+                                           project = "liverMets",3,200,  condition = "Liver_mets10",batch = "batch5",tissue_oi = "liver",phenotype_oi = "metastasis")
 
-liver_mets12 <- create_seurat_zUMI_outputs("/scratch/khandl/10.GSE216189/GSM6661386_MetsM5.dgecounts.rds", 
-                                               project = "liverMets",3,200,  condition = "Liver_mets11",batch = "batch6",tissue_oi = "liver",phenotype_oi <- "metastasis")
+liver_mets12 <- create_seurat_zUMI_outputs(file.path(raw_data_GSE216189_dir,"GSM6661386_MetsM5.dgecounts.rds"), 
+                                           project = "liverMets",3,200,  condition = "Liver_mets11",batch = "batch6",tissue_oi = "liver",phenotype_oi = "metastasis")
 
 ### Merge samples
 obj1 <- merge(liver_mets1, y = c(liver_mets2,liver_mets3,liver_mets4,liver_mets5,liver_mets6,liver_mets7,liver_mets8,liver_mets9,
@@ -59,7 +57,7 @@ obj1 <- merge(liver_mets1, y = c(liver_mets2,liver_mets3,liver_mets4,liver_mets5
 obj1 <- JoinLayers(obj1)
 
 ### Add mitochondrial percentage per cell 
-obj1$percent.mt <- PercentageFeatureSet(obj1, pattern = "^mt.")
+obj1$percent.mt <- PercentageFeatureSet(obj1, pattern = "^mt-")
 
 ### Apply mitochondrial cutoff 
 obj1 <- subset(obj1, subset = nFeature_RNA < 8000 & percent.mt < 25)
@@ -68,7 +66,7 @@ obj1 <- subset(obj1, subset = nFeature_RNA < 8000 & percent.mt < 25)
 ### Pre-processing 
 obj <- obj1
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$batch)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(object = obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -86,10 +84,9 @@ obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
-DimPlot(obj,reduction = "umap.mnn",raster=FALSE, group.by = "mnn.clusters",label = TRUE)
+DimPlot(obj,reduction = "umap.mnn", group.by = "mnn.clusters",label = TRUE)
 Idents(obj) <- "mnn.clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =5, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -120,7 +117,6 @@ markers  <- c("Ighm", "Scd1","Cd19", # B cells
               "Glul","Cyp2e1", "Ass1","Alb", # Hepatocytes
 
                "Pecam1","Dll4","Galnt15",  "Plpp1", # (LECs) Endothelial 
-              "Svep1","Ncam1", # Fibroblasts 
               "Lrat","Reln", # Stellate cells
               "Carmn","Nr1h5",  # Stromal cells liver
               "Svep1","Ncam1", # Fibroblasts liver
@@ -159,10 +155,8 @@ DotPlot(sub_celltype, features = unique(markers),dot.scale = 6, scale = TRUE, as
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
   theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 90)) 
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
 DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =5, wt = avg_log2FC))
 
 # Rename
@@ -171,7 +165,7 @@ current.cluster.ids <- c("?", "B","DCs", "Endothelial_0","Endothelial_1","Endoth
 new.cluster.ids <- c("?", "B","DCs", "Endothelial","Endothelial","lowQ","Epithelial", "Hepatocytes","Kupffer","lowQ","Mast_Eos_Baso",
                      "Monocytes","Neutrophils","PCs","Fibroblasts","T")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster Kupffer 
 Idents(subCl) <- "annotation"
@@ -210,10 +204,8 @@ DotPlot(sub_celltype, features = unique(markers),dot.scale = 6, scale = TRUE, as
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
   theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 90)) 
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
 DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =5, wt = avg_log2FC))
 
 # Rename
@@ -222,7 +214,7 @@ current.cluster.ids <- c("?", "B","DCs", "Endothelial","Epithelial", "Hepatocyte
 new.cluster.ids <- c("?", "B","DCs", "Endothelial","Epithelial", "Hepatocytes", "Kupffer","Kupffer","Kupffer","Kupffer","lowQ",
                      "lowQ","Mast_Eos_Baso","Monocytes","Neutrophils","PCs","Fibroblasts","T")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster T cells
 Idents(subCl) <- "annotation"
@@ -246,10 +238,8 @@ DotPlot(sub_celltype, features = unique(markers),dot.scale = 6, scale = FALSE, a
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
   theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 90)) 
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
 DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 FeaturePlot(sub_celltype, features = c("Cd3g","Cd8a","Icos","Ctla4"), reduction = "umap.mnn")
@@ -260,7 +250,7 @@ current.cluster.ids <- c("?", "B","DCs", "Endothelial","Epithelial", "Hepatocyte
 new.cluster.ids <- c("?", "B","DCs", "Endothelial","Epithelial", "Hepatocytes", "Kupffer","lowQ",
                      "Mast_Eos_Baso","Monocytes","Neutrophils","PCs","Fibroblasts","T","T","T","lowQ")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster DCs 
 Idents(subCl) <- "annotation"
@@ -287,10 +277,7 @@ DotPlot(sub_celltype, features = unique(markers),dot.scale = 6, scale = FALSE, a
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
   theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 90)) 
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
-DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =20, wt = avg_log2FC))
 
 # Rename
@@ -299,7 +286,7 @@ current.cluster.ids <- c("?", "B","DCs_0","DCs_1","DCs_2","DCs_3","DCs_4", "Endo
 new.cluster.ids <- c("?", "B", "DCs","Monocytes","DCs","DCs","DCs", "Endothelial","Epithelial", "Hepatocytes", "Kupffer","lowQ",
                       "Mast_Eos_Baso","Monocytes","Neutrophils","PCs","Fibroblasts","T")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster Fibroblasts 
 Idents(subCl) <- "annotation"
@@ -334,10 +321,7 @@ DotPlot(sub_celltype, features = unique(markers),dot.scale = 6, scale = FALSE, a
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
   theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 90)) 
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
-DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =20, wt = avg_log2FC))
 
 # Rename
@@ -347,7 +331,7 @@ new.cluster.ids <- c("?", "B", "DCs", "Endothelial","Epithelial", "Hepatocytes",
                      "Mast_Eos_Baso","Monocytes","Neutrophils","PCs",
                      "lowQ","lowQ","lowQ","Stellate", "T")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster monocytes 
 Idents(subCl) <- "annotation"
@@ -360,10 +344,7 @@ sub_celltype <- subset(subCl,idents = c( "Monocytes_0","Monocytes_1","Monocytes_
 DimPlot(sub_celltype, reduction = "umap.mnn", label = TRUE, group.by = "sub.cluster")
 FeaturePlot(sub_celltype, reduction = "umap.mnn",features = c("C1qc","Lyz2","Spp1","Fn1","Ly6c1"))
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
-DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =20, wt = avg_log2FC))
 
 # Rename
@@ -374,7 +355,7 @@ current.cluster.ids <- c("?", "B", "DCs", "Endothelial","Epithelial", "Hepatocyt
 new.cluster.ids <- c("?", "B", "DCs", "Endothelial","Epithelial", "Hepatocytes", "Kupffer","lowQ",
                       "Mast_Eos_Baso", "Macrophages","Monocytes","Monocytes","lowQ","lowQ","Neutrophils","PCs","Stellate", "T")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster Mast_Eos_Baso
 Idents(subCl) <- "annotation"
@@ -398,10 +379,7 @@ DotPlot(sub_celltype, features = markers, scale = FALSE) + theme(axis.text.x = e
 
 FeaturePlot(sub_celltype, reduction = "umap.mnn",features = c("Siglecf","Cpa3","Alox15","F5"))
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize",
-                              scale.factor = 10000,margin = 1, assay = "RNA")
-DefaultAssay(sub_celltype) <- "RNA"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =5, wt = avg_log2FC))
 # 1 = Eos, 3 = Baso, rest is ? 
 
@@ -413,7 +391,7 @@ new.cluster.ids <- c("?", "B", "DCs", "Endothelial","Epithelial", "Hepatocytes",
                      "?","Eosinophils","?","Basophils","?","Monocytes",
                      "Neutrophils","PCs","Stellate", "T")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Check annotation 
 markers  <- c("Ighm", "Scd1","Cd19", # B cells
@@ -438,7 +416,6 @@ markers  <- c("Ighm", "Scd1","Cd19", # B cells
               "Glul","Cyp2e1", "Ass1","Alb", # Hepatocytes
               
               "Pecam1","Dll4","Galnt15",  "Plpp1", # (LECs) Endothelial 
-              "Svep1","Ncam1", # Fibroblasts 
               "Lrat","Reln", # Stellate cells
               "Carmn","Nr1h5",  # Stromal cells liver
               "Svep1","Ncam1", # Fibroblasts liver
@@ -456,5 +433,5 @@ subCl$cell_enrichment <- "CD45pos"
 subCl$tissue <- "liver"
 
 ##### Save object 
-saveRDS(subCl,file='/scratch/khandl/technical/seurat_objects/Mm_liver_GSE216189.rds')
+saveRDS(subCl,file=file.path(seurat_objects_dir,"Mm_liver_GSE216189.rds"))
 

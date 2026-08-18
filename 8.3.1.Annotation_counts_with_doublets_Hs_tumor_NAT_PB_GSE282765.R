@@ -1,17 +1,15 @@
 ########## This code does annotation of count matrices including multiplets before cell hashing deconvolution   ##########
 # Hs tumor, NAT, PB data from GSE282765
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Pre-processing: Loading of unfiltered matrix, EmptyDrops and merging of resulting data 
 ### P1 
 ## load data 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P1_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 
 ## run EmptyDrops
 set.seed(100)
@@ -31,7 +29,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P1_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P1",3,200,  "P1","with_multiplet","Exp1","patient")
 
 ## add singlet/multiplet condition
-P1 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
+P1 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P1_Sample_Tag_Calls.csv"),skip = 7)
 P1_multiplets <- P1[P1$Sample_Tag %in% "Multiplet",]$Cell_Index
 P1_singlets <- P1[P1$Sample_Tag %in% c("SampleTag01_hs","SampleTag02_hs","SampleTag03_hs","SampleTag04_hs"),]$Cell_Index
 
@@ -47,7 +45,7 @@ Idents(P1_seurat) <- "cell_hashing_cond"
 P1_seurat <- subset(P1_seurat, idents = c("Doublet","Singlet"))
 
 ### P2 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P2_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P2_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
@@ -59,7 +57,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P2_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P2",3,200,  "P2","with_multiplet","Exp2","patient")
 
 ## add singlet/multiplet condition
-P2 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
+P2 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P2_Sample_Tag_Calls.csv"),skip = 7)
 P2_multiplets <- P2[P2$Sample_Tag %in% "Multiplet",]$Cell_Index
 P2_singlets <- P2[P2$Sample_Tag %in% c("SampleTag05_hs","SampleTag06_hs","SampleTag07_hs","SampleTag08_hs"),]$Cell_Index
 
@@ -75,7 +73,7 @@ Idents(P2_seurat) <- "cell_hashing_cond"
 P2_seurat <- subset(P2_seurat, idents = c("Doublet","Singlet"))
 
 ## P3 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P3_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P3_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
@@ -87,7 +85,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P3_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P3",3,200,  "P3","with_multiplet","Exp3","patient")
 
 ## add singlet/multiplet condition
-P3 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
+P3 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P3_Sample_Tag_Calls.csv"),skip = 7)
 P3_multiplets <- P3[P3$Sample_Tag %in% "Multiplet",]$Cell_Index
 P3_singlets <- P3[P3$Sample_Tag %in% c("SampleTag09_hs","SampleTag10_hs","SampleTag11_hs","SampleTag12_hs"),]$Cell_Index
 
@@ -103,7 +101,7 @@ Idents(P3_seurat) <- "cell_hashing_cond"
 P3_seurat <- subset(P3_seurat, idents = c("Doublet","Singlet"))
 
 ## P4 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P4_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P4_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
@@ -115,7 +113,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P4_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P4",3,200,  "P4","with_multiplet","Exp4","patient")
 
 ## add singlet/multiplet condition
-P4 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
+P4 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P4_Sample_Tag_Calls.csv"),skip = 7)
 P4_multiplets <- P4[P4$Sample_Tag %in% "Multiplet",]$Cell_Index
 P4_singlets <- P4[P4$Sample_Tag %in% c("SampleTag01_hs","SampleTag02_hs","SampleTag03_hs","SampleTag04_hs"),]$Cell_Index
 
@@ -131,7 +129,7 @@ Idents(P4_seurat) <- "cell_hashing_cond"
 P4_seurat <- subset(P4_seurat, idents = c("Doublet","Singlet"))
 
 ## P5 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P5_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P5_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
@@ -143,7 +141,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P5_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P5",3,200,  "P5","with_multiplet","Exp5","patient")
 
 ## add singlet/multiplet condition
-P5 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
+P5 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P5_Sample_Tag_Calls.csv"),skip = 7)
 P5_multiplets <- P5[P5$Sample_Tag %in% "Multiplet",]$Cell_Index
 P5_singlets <- P5[P5$Sample_Tag %in% c("SampleTag06_hs","SampleTag07_hs","SampleTag08_hs"),]$Cell_Index
 
@@ -159,7 +157,7 @@ Idents(P5_seurat) <- "cell_hashing_cond"
 P5_seurat <- subset(P5_seurat, idents = c("Doublet","Singlet"))
 
 ## P6 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P6_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P6_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
@@ -171,7 +169,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P6_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P6",3,200,  "P6","with_multiplet","Exp7","patient")
 
 ## add singlet/multiplet condition
-P6 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
+P6 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P6_Sample_Tag_Calls.csv"),skip = 7)
 P6_multiplets <- P6[P6$Sample_Tag %in% "Multiplet",]$Cell_Index
 P6_singlets <- P6[P6$Sample_Tag %in% c("SampleTag02_hs","SampleTag05_hs","SampleTag06_hs","SampleTag07_hs"),]$Cell_Index
 
@@ -187,7 +185,7 @@ Idents(P6_seurat) <- "cell_hashing_cond"
 P6_seurat <- subset(P6_seurat, idents = c("Doublet","Singlet"))
 
 ## P7 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P7_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir, "P7_tumor_NAT_Expression_Data_Unfiltered.st"))
 set.seed(100)
 df <- emptyDrops(counts_data,test.ambient = TRUE)
 df$is.cell <- df$FDR <= 0.01
@@ -199,7 +197,7 @@ counts_data <- counts_data[,colnames(counts_data) %in% real_cells_id]
 P7_seurat <- create_seurat_Hs_data_from_sparse_matrix(counts_data, "P7",3,200,  "P7","with_multiplet","Exp8","patient")
 
 ## add singlet/multiplet condition
-P7 <- read.csv("/scratch/khandl/Technical_count_matrices/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
+P7 <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P7_Sample_Tag_Calls.csv"),skip = 7)
 P7_multiplets <- P7[P7$Sample_Tag %in% "Multiplet",]$Cell_Index
 P7_singlets <- P7[P7$Sample_Tag %in% c("SampleTag10_hs","SampleTag11_hs","SampleTag12_hs"),]$Cell_Index
 
@@ -223,10 +221,10 @@ obj <- JoinLayers(obj)
 obj$percent.mt <- PercentageFeatureSet(obj, pattern = "^MT-")
 
 ### Save object
-saveRDS(obj, file = "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7.rds")
+saveRDS(obj, file = file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7.rds"))
 
 ##### Load R object 
-obj <- readRDS(file = "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7.rds")
+obj <- readRDS(file = file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7.rds"))
 
 ### Apply mitochondrial cutoff 
 obj <- subset(obj, subset = percent.mt < 25)
@@ -234,7 +232,7 @@ obj <- subset(obj, subset = percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -246,14 +244,13 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "mnn.clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =5, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -286,7 +283,7 @@ new.cluster.ids <- c("Neutrophils","Eosinophils","T","PCs", "lowQ", "Macrophages
                      "lowQ","PCs","Mixed","T","lowQ",
                      "Mixed","Mast","Mixed","Mixed","Mixed","Mixed","Mixed")
 obj$annotation <- plyr::mapvalues(x = obj$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(obj, group.by = "annotation", label = TRUE,raster=TRUE,reduction = "umap.mnn")
+DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster Monocytes_DC
 Idents(obj) <- "annotation"
@@ -299,7 +296,7 @@ sub_celltype <- subset(subCl,idents = c( "Monocytes_DC_0","Monocytes_DC_1","Mono
 DimPlot(sub_celltype, reduction = "umap.mnn")
 
 Idents(sub_celltype) <- "sub.cluster"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 VlnPlot(sub_celltype, features = "nFeature_RNA", pt.size = 0)
 FeaturePlot(sub_celltype, features = "CD1C")
@@ -312,7 +309,7 @@ current.cluster.ids <- c("B","Endothelial","Eosinophils","Epithelial",
 new.cluster.ids <- c("B","Endothelial","Eosinophils","Epithelial",
                      "Fibroblasts","lowQ","Macrophages","Mast","Mixed","Monocytes","DCs","TAMs", "Mixed", "Neutrophils","PCs","T","TAMs")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ##### Check annotation
 Idents(subCl) <- "annotation"
@@ -337,5 +334,4 @@ DotPlot(subCl, features = unique(c("TPSAB1","KIT","TPSB2", # Mast cells
 VlnPlot(subCl, features = "nFeature_RNA")
 
 ##### Save object 
-saveRDS(subCl, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds")
-
+saveRDS(subCl, file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds"))

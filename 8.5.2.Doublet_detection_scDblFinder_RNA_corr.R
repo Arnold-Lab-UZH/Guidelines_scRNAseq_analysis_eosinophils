@@ -1,14 +1,12 @@
 ######### This code identifies and analyses doublets based on scDblFinder  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load annotated data 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds"))
 
 ##### Run scDblFinder  
 set.seed(100)
@@ -33,9 +31,10 @@ Idents(sub) <- "experiment"
 sub <- subset(sub, idents = "Exp2")
 
 p <- FeaturePlot(sub, features = "scDblFinder.score", reduction = "umap.mnn", cols = brewer.pal(n = 9, name = "YlOrRd") )  # gradient from low -> mid -> high )
-ggsave("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_umap075.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "scDblFinder_wo_umap075.svg"), width = 8, height = 8, plot = p)
 
 ##### Calculate percentage of doublet rate 
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 experimet_ids <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 for (i in experimet_ids) {
   Idents(obj) <- "experiment"
@@ -52,7 +51,7 @@ sample <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 multiplet_rate_per_sample <- c(12.19721,12.73463,11.52261,11.7067,12.04502,11.98353,12.09395)
 df <- data.frame(sample, multiplet_rate_per_sample)
 df$method <- "scDblFinder"
-write.csv(df,"/scratch/khandl/technical/figures/Doublet/scDblFinder_doublet_rate075_RNA_corr.csv")
+write.csv(df,file.path(doublet_tables_dir, "scDblFinder_doublet_rate075_RNA_corr.csv"))
 
 ##### Extract doublets and deconvolute 
 Idents(obj) <- "scDblFinder.class"
@@ -66,7 +65,7 @@ colnames(df) <- colnames(sub)
 df <- as.data.frame(df)
 
 ### Generate reference (need NAT, tumor)
-reference <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+reference <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 Idents(reference) <- "annotation"
 reference <- subset(reference, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial","Fibroblasts", "Macrophages",
@@ -117,11 +116,9 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
 
 ### Save deconvolution results 
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
+write.csv(deconvolution_crc_df,file.path(doublet_tables_dir, "scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv"))
 
 ##### Save Seurat object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_scDblFinder075.rds")
-
-
+saveRDS(obj, file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_scDblFinder075.rds"))
 
 

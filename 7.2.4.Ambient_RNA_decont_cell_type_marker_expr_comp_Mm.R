@@ -1,17 +1,15 @@
 ########## This code tests the quality of decontamination tools by their influence on marker gene expression  ##########
 ### Datasets used: GSE282765; Mm colon healthy, CRC tumor, NAT, disseminated 
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.5.Functions_ambient_RNA_plotting.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.5.Functions_ambient_RNA_plotting.R"))
 
 ##### Load R objects 
-obj_RNA_scCDC <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_scCDC.rds")
-obj_decontX <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_decontX.rds")
-obj_SoupX <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_SoupX.rds")
+obj_RNA_scCDC <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_scCDC.rds"))
+obj_decontX <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_decontX.rds"))
+obj_SoupX <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_SoupX.rds"))
 
 Idents(obj_RNA_scCDC) <- "annotation"
 obj_RNA_scCDC <- subset(obj_RNA_scCDC, idents = c("PCs","TAMs","Neutrophils","Eosinophils"))
@@ -35,7 +33,7 @@ markers <- list(PC_Markers = c("Igkc","Jchain","Iglc2"),
                 Eos_Marker = c("Ccr3","F5","Syne1"))
 
 colData(sce)$cluster <- sce$annotation
-df_RNA <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = c("counts"), z = "annotation")
+df_RNA <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = "counts", z = "annotation")
 
 ### decontX assay 
 DefaultAssay(obj_decontX) <- "RNA"
@@ -47,7 +45,7 @@ markers <- list(PC_Markers = c("Igkc","Jchain","Iglc2"),
                 Eos_Marker = c("Ccr3","F5","Syne1"))
 
 colData(sce)$cluster <- sce$annotation
-df_decontX <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = c("counts"), z = "annotation")
+df_decontX <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = "counts", z = "annotation")
 df_decontX$assay <- "decontX"
 
 ### SoupX assay 
@@ -60,7 +58,7 @@ markers <- list(PC_Markers = c("Igkc","Jchain","Iglc2"),
                 Eos_Marker = c("Ccr3","F5","Syne1"))
 
 colData(sce)$cluster <- sce$annotation
-df_SoupX <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = c("counts"), z = "annotation")
+df_SoupX <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = "counts", z = "annotation")
 df_SoupX$assay <- "SoupX"
 
 ### scCDC assay 
@@ -73,7 +71,7 @@ markers <- list(PC_Markers = c("Igkc","Jchain","Iglc2"),
                 Eos_Marker = c("Ccr3","F5","Syne1"))
 
 colData(sce)$cluster <- sce$annotation
-df_scCDC <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = c("counts"), z = "annotation")
+df_scCDC <- plotDecontXMarkerPercentage_df(sce, markers = markers,assayName = "counts", z = "annotation")
 df_scCDC$assay <- "scCDC"
 
 df <- rbind(df_RNA, df_decontX)
@@ -101,7 +99,7 @@ p <- ggplot(df1, aes(x = cellType, y =  percent, fill = assay)) +
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   )
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/PCmarkersMm.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "PCmarkersMm.svg"), width = 10, height = 8, plot = p)
 
 ## Plot marker labels of TAMs markers 
 df1 <- df[df$markerLabels %in% "TAMs_Marker",]
@@ -124,7 +122,7 @@ p <- ggplot(df1, aes(x = cellType, y =  percent, fill = assay)) +
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   ) + ylim(0,100)
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/TAMsmarkersMm.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "TAMsmarkersMm.svg"), width = 10, height = 8, plot = p)
 
 ## Plot marker labels of Neutrophil markers 
 df1 <- df[df$markerLabels %in% "Neutro_Markers",]
@@ -147,7 +145,7 @@ p <- ggplot(df1, aes(x = cellType, y =  percent, fill = assay)) +
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   )
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/NeutromarkersMm.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "NeutromarkersMm.svg"), width = 10, height = 8, plot = p)
 
 ## Plot marker labels of Eosinophil markers 
 df1 <- df[df$markerLabels %in% "Eos_Marker",]
@@ -170,4 +168,4 @@ p <- ggplot(df1, aes(x = cellType, y =  percent, fill = assay)) +
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   ) +  ylim(0,100)
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/EosmarkersMm.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "EosmarkersMm.svg"), width = 10, height = 8, plot = p)

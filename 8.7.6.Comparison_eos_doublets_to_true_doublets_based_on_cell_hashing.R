@@ -1,22 +1,14 @@
 ######### This code analyzes eosinophil contributing doublet identities from doublet identification tools to true doublets from cell hashing ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Eosinophil homo- and heterotypic doublets 
 ### Extract homo and heterotypic barcodes per experiment 
 ## Cell Hashing = true doublets 
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_deconvolution_result.csv")
+df <- read.csv(file.path(doublet_tables_dir, "cell_hashing_doublets_deconvolution_result.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -42,7 +34,7 @@ h6_homo_hash <- (df_h6[df_h6$Eosinophils > 0.75,])$X
 h7_homo_hash <- (df_h7[df_h7$Eosinophils > 0.75,])$X
 
 ## Based on gene counts 
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result_corr.csv")
+df <- read.csv(file.path(doublet_tables_dir, "upperFeature_cutoff_doublets_deconvolution_result_corr.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -68,7 +60,7 @@ h6_homo_counts <- (df_h6[df_h6$Eosinophils > 0.75,])$X
 h7_homo_counts <- (df_h7[df_h7$Eosinophils > 0.75,])$X
 
 ## Based on scDblFinder
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
+df <- read.csv(file.path(doublet_tables_dir, "scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -94,7 +86,7 @@ h6_homo_scDbl <- (df_h6[df_h6$Eosinophils > 0.75,])$X
 h7_homo_scDbl <- (df_h7[df_h7$Eosinophils > 0.75,])$X
 
 ## Based on DoubletFinder
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result_corr.csv")
+df <- read.csv(file.path(doublet_tables_dir, "DoubletFinder_wo_doublets_deconvolution_result_corr.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -145,6 +137,7 @@ df7 <- matching_bc *100/ length(h7_hetero_hash)
 
 percentage_hetero_counts <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_hetero_counts) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_hetero_counts$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_hetero_counts$identity <- "heterotypic"
 percentage_hetero_counts$method <- "gene_counts"
@@ -173,6 +166,7 @@ df7 <- matching_bc *100/ length(h7_homo_hash)
 
 percentage_homo_counts <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_homo_counts) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_homo_counts$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_homo_counts$identity <- "homotypic"
 percentage_homo_counts$method <- "gene_counts"
@@ -202,6 +196,7 @@ df7 <- matching_bc *100/ length(h7_hetero_hash)
 
 percentage_hetero_scDbl <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_hetero_scDbl) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_hetero_scDbl$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_hetero_scDbl$identity <- "heterotypic"
 percentage_hetero_scDbl$method <- "scDblFinder"
@@ -230,6 +225,7 @@ df7 <- matching_bc *100/ length(h7_homo_hash)
 
 percentage_homo_scDbl <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_homo_scDbl) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_homo_scDbl$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_homo_scDbl$identity <- "homotypic"
 percentage_homo_scDbl$method <- "scDblFinder"
@@ -259,6 +255,7 @@ df7 <- matching_bc *100/ length(h7_hetero_hash)
 
 percentage_hetero_DoubletF <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_hetero_DoubletF) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_hetero_DoubletF$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_hetero_DoubletF$identity <- "heterotypic"
 percentage_hetero_DoubletF$method <- "DoubletFinder"
@@ -287,6 +284,7 @@ df7 <- matching_bc *100/ length(h7_homo_hash)
 
 percentage_homo_DoubletF <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_homo_DoubletF) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_homo_DoubletF$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_homo_DoubletF$identity <- "homotypic"
 percentage_homo_DoubletF$method <- "DoubletFinder"
@@ -307,7 +305,7 @@ p <- ggplot(df_het, aes(x = method, y =  Value, fill = method)) +
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylim(1,100) + 
   scale_fill_manual(values =  c( "scDblFinder" = "#F9084D","gene_counts" = "#F9084D","DoubletFinder"="#F9084D"))
-ggsave("/scratch/khandl/technical/figures/Doublet/Percentage_of_true_doublets_hashing_eos_heterotypic.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "Percentage_of_true_doublets_hashing_eos_heterotypic.svg"), width = 8, height = 8, plot = p)
 
 # homotypic 
 df_homo <- df[df$identity %in% "homotypic",]
@@ -316,8 +314,7 @@ p <- ggplot(df_homo, aes(x = method, y =  Value, fill = method)) +
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylim(1,100) + 
   scale_fill_manual(values =  c( "scDblFinder" = "#F9084D","gene_counts" = "#F9084D","DoubletFinder"="#F9084D"))
-ggsave("/scratch/khandl/technical/figures/Doublet/Percentage_of_true_doublets_hashing_eos_homotypic.svg", width = 8, height = 8, plot = p)
-
+ggsave(file.path(doublet_plots_dir, "Percentage_of_true_doublets_hashing_eos_homotypic.svg"), width = 8, height = 8, plot = p)
 
 ## Run statistical analysis for each group 
 # Heterotypic 
@@ -337,7 +334,7 @@ TukeyHSD(anova)
 ##### Macrophages homo- and heterotypic doublets 
 ### Extract homo and heterotypic barcodes per experiment 
 ## Cell Hashing = true doublets 
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/cell_hashing_doublets_deconvolution_result.csv")
+df <- read.csv(file.path(doublet_tables_dir, "cell_hashing_doublets_deconvolution_result.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -363,7 +360,7 @@ h6_homo_hash <- (df_h6[df_h6$Macrophages > 0.75,])$X
 h7_homo_hash <- (df_h7[df_h7$Macrophages > 0.75,])$X
 
 ## Based on gene counts 
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result_corr.csv")
+df <- read.csv(file.path(doublet_tables_dir, "upperFeature_cutoff_doublets_deconvolution_result_corr.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -389,7 +386,7 @@ h6_homo_counts <- (df_h6[df_h6$Macrophages > 0.75,])$X
 h7_homo_counts <- (df_h7[df_h7$Macrophages > 0.75,])$X
 
 ## Based on scDblFinder
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv")
+df <- read.csv(file.path(doublet_tables_dir, "scDblFinder_wo_doublets_deconvolution_result075_RNA_corr.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -415,7 +412,7 @@ h6_homo_scDbl <- (df_h6[df_h6$Macrophages > 0.75,])$X
 h7_homo_scDbl <- (df_h7[df_h7$Macrophages > 0.75,])$X
 
 ## Based on DoubletFinder
-df <- read.csv("/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result_corr.csv")
+df <- read.csv(file.path(doublet_tables_dir, "DoubletFinder_wo_doublets_deconvolution_result_corr.csv"))
 df_h1 <- df[grepl("^h1_", df$X), ]
 df_h2 <- df[grepl("^h2_", df$X), ]
 df_h3 <- df[grepl("^h3_", df$X), ]
@@ -466,6 +463,7 @@ df7 <- matching_bc *100/ length(h7_hetero_hash)
 
 percentage_hetero_counts <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_hetero_counts) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_hetero_counts$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_hetero_counts$identity <- "heterotypic"
 percentage_hetero_counts$method <- "gene_counts"
@@ -494,6 +492,7 @@ df7 <- matching_bc *100/ length(h7_homo_hash)
 
 percentage_homo_counts <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_homo_counts) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_homo_counts$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_homo_counts$identity <- "homotypic"
 percentage_homo_counts$method <- "gene_counts"
@@ -523,6 +522,7 @@ df7 <- matching_bc *100/ length(h7_hetero_hash)
 
 percentage_hetero_scDbl <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_hetero_scDbl) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_hetero_scDbl$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_hetero_scDbl$identity <- "heterotypic"
 percentage_hetero_scDbl$method <- "scDblFinder"
@@ -551,6 +551,7 @@ df7 <- matching_bc *100/ length(h7_homo_hash)
 
 percentage_homo_scDbl <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_homo_scDbl) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_homo_scDbl$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_homo_scDbl$identity <- "homotypic"
 percentage_homo_scDbl$method <- "scDblFinder"
@@ -580,6 +581,7 @@ df7 <- matching_bc *100/ length(h7_hetero_hash)
 
 percentage_hetero_DoubletF <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_hetero_DoubletF) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_hetero_DoubletF$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_hetero_DoubletF$identity <- "heterotypic"
 percentage_hetero_DoubletF$method <- "DoubletFinder"
@@ -608,6 +610,7 @@ df7 <- matching_bc *100/ length(h7_homo_hash)
 
 percentage_homo_DoubletF <- as.data.frame(c(df1,df2,df3,df4,df5,df6,df7))
 colnames(percentage_homo_DoubletF) <- "Value"
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 percentage_homo_DoubletF$exp <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 percentage_homo_DoubletF$identity <- "homotypic"
 percentage_homo_DoubletF$method <- "DoubletFinder"
@@ -628,7 +631,7 @@ p <- ggplot(df_het, aes(x = method, y =  Value, fill = method)) +
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylim(1,100) + 
   scale_fill_manual(values =  c( "scDblFinder" = "#37B44A","gene_counts" = "#37B44A","DoubletFinder"="#37B44A"))
-ggsave("/scratch/khandl/technical/figures/Doublet/Percentage_of_true_doublets_hashing_mac_heterotypic.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "Percentage_of_true_doublets_hashing_mac_heterotypic.svg"), width = 8, height = 8, plot = p)
 
 # homotypic 
 df_homo <- df[df$identity %in% "homotypic",]
@@ -637,8 +640,7 @@ p <- ggplot(df_homo, aes(x = method, y =  Value, fill = method)) +
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ylim(1,100) + 
   scale_fill_manual(values =  c( "scDblFinder" = "#37B44A","gene_counts" = "#37B44A","DoubletFinder"="#37B44A"))
-ggsave("/scratch/khandl/technical/figures/Doublet/Percentage_of_true_doublets_hashing_mac_homotypic.svg", width = 8, height = 8, plot = p)
-
+ggsave(file.path(doublet_plots_dir, "Percentage_of_true_doublets_hashing_mac_homotypic.svg"), width = 8, height = 8, plot = p)
 
 ## Run statistical analysis for each group 
 # Heterotypic 

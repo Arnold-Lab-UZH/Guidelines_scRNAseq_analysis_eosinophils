@@ -1,16 +1,15 @@
 ########### This code compares the usage of  MALAT1 to identify empty droplets  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor;
 
-##### Set up environment 
-setwd("/data/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.4.Functions_MALAT1_threshold_empty_droplets_Clarke_Bader_etal.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
+source(file.path(base_dir, "1.4.Functions_MALAT1_threshold_empty_droplets_Clarke_Bader_etal.R"))
 
 ##### Plot MALAT1 expression in histogram while highlighting eosinophils
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
+
 gene <- "MALAT1"
 obj <- NormalizeData(obj)
 df <- FetchData(obj, vars = c(gene,"annotation"),layer = "data")
@@ -23,11 +22,11 @@ p <- ggplot(df, aes(x = norm_expression, fill = annotation == "Eosinophils")) +
   ylab("Number of Cells") +
   ggtitle("Distribution of Malat1 Expression") +
   scale_fill_manual(values = c("grey", "#E22F27"), labels = c("Other", "cell_lower200"))
-ggsave("/scratch/khandl/technical/figures/Empty_droplets_by_Malat1/Hs_Malat1_histogram_Eos_highlighted.svg", width = 12, height = 8, plot = p)
+ggsave(file.path(empty_droplets_plots_dir, "Hs_Malat1_histogram_Eos_highlighted.svg"), width = 12, height = 8, plot = p)
 
 ##### Run for each experiment/cartridge individually 
 ### P1 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P1_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P1_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 
@@ -46,9 +45,9 @@ df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MA
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
 
 ## Identify cell barcodes from NAT and tuomr 
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P1_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P1_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
-NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "contol",])$Cell_Index
+NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control",])$Cell_Index
 
 ## Extract the right barcodes per sample from the MALAT1 analysis df 
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -62,7 +61,7 @@ P1_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P1",3,2
 P1_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P1",3,200, "P1_tissue_ctrl","tissue_ctrl","Exp1","patient")
 
 ### P2 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P2_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P2_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 norm_data <- GetAssayData(counts_data_seurat, layer = "data")
@@ -72,7 +71,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P2_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P2_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h2_tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -83,7 +82,7 @@ P2_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P2",3,2
 P2_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P2",3,200, "P2_tissue_ctrl","tissue_ctrl","Exp2","patient")
 
 ### P3 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P3_tumor_NAT_blood_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P3_tumor_NAT_blood_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 norm_data <- GetAssayData(counts_data_seurat, layer = "data")
@@ -93,7 +92,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P3_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P3_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "h3_control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -104,7 +103,7 @@ P3_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P3",3,2
 P3_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P3",3,200, "P3_tissue_ctrl","tissue_ctrl","Exp3","patient")
 
 ### P4
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P4_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P4_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 norm_data <- GetAssayData(counts_data_seurat, layer = "data")
@@ -114,7 +113,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P4_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P4_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -125,7 +124,7 @@ P4_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P4",3,2
 P4_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P4",3,200, "P4_tissue_ctrl","tissue_ctrl","Exp4","patient")
 
 ### P5
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P5_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P5_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 norm_data <- GetAssayData(counts_data_seurat, layer = "data")
@@ -135,7 +134,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P5_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P5_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor_CD45",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "control_CD45",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -146,7 +145,7 @@ P5_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P5",3,2
 P5_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P5",3,200, "P5_tissue_ctrl","tissue_ctrl","Exp5","patient")
 
 ### P6 
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P6_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P6_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 norm_data <- GetAssayData(counts_data_seurat, layer = "data")
@@ -156,7 +155,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P6_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P6_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "P6_control",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -167,7 +166,7 @@ P6_tumor <- create_seurat_Hs_data_from_sparse_matrix(counts_data_tumor, "P6",3,2
 P6_control <- create_seurat_Hs_data_from_sparse_matrix(counts_data_NAT, "P6",3,200, "P6_tissue_ctrl","tissue_ctrl","Exp6","patient")
 
 ### P7
-counts_data <- data_to_sparse_matrix_unfiltered("/scratch/khandl/Technical_count_matrices/P7_tumor_NAT_Expression_Data_Unfiltered.st")
+counts_data <- data_to_sparse_matrix_unfiltered(file.path(raw_data_GSE282765_unfiltered_dir,"P7_tumor_NAT_Expression_Data_Unfiltered.st"))
 counts_data_seurat <- CreateSeuratObject(counts_data)
 counts_data_seurat <- NormalizeData(counts_data_seurat)
 norm_data <- GetAssayData(counts_data_seurat, layer = "data")
@@ -177,7 +176,7 @@ df <- FetchData(counts_data_seurat, vars = c("MALAT1"),layer = "data")
 colnames(df) <- c("norm_expression")
 df$threshold_malat1 <- ifelse(df$norm_expression > threshold, "MALAT1_real", "MALAT1_empty")
 df <- df[df$threshold_malat1 %in% "MALAT1_real",]
-ST_calls <- read.csv("/scratch/khandl/Sample_tag_calls/Hs_P7_Sample_Tag_Calls.csv",skip = 7)
+ST_calls <- read.csv(file.path(raw_data_GSE282765_sample_tag_calls_dir, "Hs_P7_Sample_Tag_Calls.csv"),skip = 7)
 tumor_calls <- (ST_calls[ST_calls$Sample_Name %in% "tumor",])$Cell_Index
 NAT_calls <- (ST_calls[ST_calls$Sample_Name %in% "tissue_ctrl",])$Cell_Index
 df_tumor <- df[rownames(df) %in% tumor_calls,]
@@ -206,13 +205,13 @@ patients$cell_enrichment  <- "CD45"
 patients <- subset(patients, subset = percent.mt < 25)
 
 ##### Load annotated object from BD forced pipeline 
-obj_forced <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_forced <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Clustering 
 ### Pre-processing 
 obj <- patients
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,  margin = 1,assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -224,7 +223,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 obj_MALAT1 <- obj
 
@@ -281,7 +280,7 @@ obj_MALAT1 <- subset(obj_MALAT1, idents = c("B","DCs","Endothelial","Eosinophils
                                                     "Monocytes","Neutrophils","PCs","T","TAMs","Undefined"))
 
 ##### save object 
-saveRDS(obj_MALAT1, "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_MALAT1_determination_with_intronic_reads_annotated.rds")
+saveRDS(obj_MALAT1, file.path(seurat_objects_dir, "Hs_tumor_NAT_MALAT1_determination_with_intronic_reads_annotated.rds"))
 
 
 

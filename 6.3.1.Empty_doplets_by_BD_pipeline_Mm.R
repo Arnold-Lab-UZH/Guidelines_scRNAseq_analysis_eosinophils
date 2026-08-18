@@ -1,32 +1,30 @@
 ########### This code compares forced and automatic BD pipeline ##########
 ### Datasets used: GSE282765; BM and blood Mm healthy and CRC 
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.2.Functions_Seurat_integration.R"))
 
 ##### Load annotated object from BD forced pipeline 
-obj_forced <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj_forced <- readRDS(file.path(seurat_objects_dir, "Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Seurat object generation from BD automatic 
 ### automatic cell determination - intronic and exonic reads 
 blood_wt <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Automatic_cell_determination_intronic_and_exonic_reads", "Automatic_cell_determination_intronic_and_exonic_Mm_blood_healthy_ST11_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_automatic_intron_exon_dir, "Automatic_cell_determination_intronic_and_exonic_Mm_blood_healthy_ST11_Expression_Data.st"), 
   project = "blood_wt", condition = "blood_wt",3,200)
 
 blood_tumor <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Automatic_cell_determination_intronic_and_exonic_reads", "Automatic_cell_determination_intronic_and_exonic_Mm_blood_AKPS_tumor_ST12_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_automatic_intron_exon_dir, "Automatic_cell_determination_intronic_and_exonic_Mm_blood_AKPS_tumor_ST12_Expression_Data.st"), 
   project = "blood_tumor", condition = "blood_tumor",3,200)
 
 bm_wt <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Automatic_cell_determination_intronic_and_exonic_reads", "Automatic_cell_determination_intronic_and_exonic_Mm_bm_healthy_ST09_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_automatic_intron_exon_dir, "Automatic_cell_determination_intronic_and_exonic_Mm_bm_healthy_ST09_Expression_Data.st"), 
   project = "bm_wt", condition = "bm_wt",3,200)
 
 bm_tumor <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Automatic_cell_determination_intronic_and_exonic_reads", "Automatic_cell_determination_intronic_and_exonic_Mm_bm_AKPS_tumor_ST10_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_automatic_intron_exon_dir, "Automatic_cell_determination_intronic_and_exonic_Mm_bm_AKPS_tumor_ST10_Expression_Data.st"), 
   project = "bm_tumor", condition = "bm_tumor",3,200)
 
 ### Merge samples
@@ -35,7 +33,7 @@ tumor <- merge(blood_wt, y = c(blood_tumor, bm_wt, bm_tumor),
 tumor <- JoinLayers(tumor)
 
 ### Add mitochondrial percentage per cell 
-tumor$percent.mt <- PercentageFeatureSet(tumor, pattern = "^mt.")
+tumor$percent.mt <- PercentageFeatureSet(tumor, pattern = "^mt-")
 
 ### Add conditions to metadata 
 tumor$cell_determination <- "automatic"
@@ -45,17 +43,17 @@ tumor$technology <- "BD_Rhapsody"
 tumor$cell_enrichment  <- "Eosinophils"
 
 ### Save object
-saveRDS(tumor, file = "/scratch/khandl/technical/seurat_objects/Automatic_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds")
+saveRDS(tumor, file = file.path(seurat_objects_dir, "Automatic_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds"))
 
 ##### Load BD automatic object 
-obj_autom <- readRDS( "/scratch/khandl/4.Technical/Automatic_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds")
+obj_autom <- readRDS( file.path(data_dir, "Automatic_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds"))
 
 ##### Clustering 
 ### Pre-processing 
 obj <- obj_autom
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
 obj <- subset(obj, subset = percent.mt < 25)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -67,7 +65,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.8, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 obj_autom <- obj
 
@@ -117,4 +115,4 @@ table(obj_autom$annotation)
 DimPlot(obj_autom, group.by = "annotation", label = TRUE)
 
 ##### save object 
-saveRDS(obj_autom, "/scratch/khandl/technical/seurat_objects/Mm_blood_bm_healthy_tumor_automatic_cell_determination_with_intronic_reads_annotated.rds")
+saveRDS(obj_autom, file.path(seurat_objects_dir, "Mm_blood_bm_healthy_tumor_automatic_cell_determination_with_intronic_reads_annotated.rds"))

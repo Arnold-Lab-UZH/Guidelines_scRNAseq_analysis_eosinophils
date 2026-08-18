@@ -1,25 +1,23 @@
 ########## This code compares gene counts across cell types  ##########
 ### Datasets used: GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load annotated R objects 
-In_house_data1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data2 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data3 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data4 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data5 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
+In_house_data1 <- readRDS(file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data2 <- readRDS(file.path(seurat_objects_dir,"Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data3 <- readRDS(file.path(seurat_objects_dir,"Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data4 <- readRDS(file.path(seurat_objects_dir,"Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data5 <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
-Public_data1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_GSE256088_et_al_anno.rds")
-Public_data2 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_E-MTAB-14010_anno.rds")
-Public_data3 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_bm_GSM7919060_anno.rds")
-Public_data4 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_blood_GSE276583_anno.rds")
-Public_data5 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_liver_GSE216189.rds")
-Public_data6 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_esophagus_duodenum_EoE_GSE175930_anno.rds")
+Public_data1 <- readRDS(file.path(seurat_objects_dir,"Hs_blood_GSE256088_et_al_anno.rds"))
+Public_data2 <- readRDS(file.path(seurat_objects_dir,"Hs_blood_E-MTAB-14010_anno.rds"))
+Public_data3 <- readRDS(file.path(seurat_objects_dir,"Mm_bm_GSM7919060_anno.rds"))
+Public_data4 <- readRDS(file.path(seurat_objects_dir,"Hs_blood_GSE276583_anno.rds"))
+Public_data5 <- readRDS(file.path(seurat_objects_dir,"Mm_liver_GSE216189.rds"))
+Public_data6 <- readRDS(file.path(seurat_objects_dir,"Hs_esophagus_duodenum_EoE_GSE175930_anno.rds"))
 
 ##### Remove ? and lowQ and mixed cells 
 Idents(In_house_data1) <- "annotation"
@@ -409,7 +407,7 @@ p <- ggplot(df, aes(x = reorder(celltype, median_nFeature, FUN = median), y =  m
                                 "Hepatocytes"="#EF670A","Kupffer"="#2F5B36", "Macrophages" = "#82C341","Mast" = "#7F7F79", 
                                 "HSCs" = "#EFE9BF","Monocytes" = "#ADD8AB", "Neutrophils" = "#9518ED",  "PCs" = "#B4C108",
                                 "ProMono"="#D2EFD0", "ProNeutro" = "#D9C1E8", "T" = "#5BC7D9",   "TAMs" = "#516D38", "Stellate"="#877864"))
-ggsave("/scratch/khandl/technical/figures/gene_counts_across_datasets/all.svg", width = 20, height = 8, plot = p)
+ggsave(file.path(gene_counts_plots_dir,"all.svg"), width = 20, height = 8, plot = p)
 
 ## statistical test --> one way ANOVA 
 anova <- aov(median_nFeature ~ celltype, data = df)
@@ -426,7 +424,7 @@ p <- ggplot(df, aes(x =  celltype, y =  median_nFeature, fill = celltype)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_manual(values = c("Eosinophils" = "#E22F27","EoP" = "#E8AAAA", "Neutrophils" = "#9518ED", "ProNeutro" = "#D9C1E8",
                                "Monocytes" = "#ADD8AB", "ProMono" = "#D2EFD0","GMPs" = "#CC820D"))
-ggsave("/scratch/khandl/technical/figures/gene_counts_across_datasets/eos_neutro_plus_progenitor.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(gene_counts_plots_dir, "eos_neutro_plus_progenitor.svg"), width = 10, height = 8, plot = p)
 
 ## statistical test --> one way ANOVA 
 anova <- aov(median_nFeature ~ celltype, data = df)
@@ -441,7 +439,7 @@ p <- ggplot(df, aes(x = reorder(technology, median_nFeature, FUN = median), y = 
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_manual(values = c("HIVE" = "#E4E522", "BD" = "#B34E9D","10X" = "#6D5421"))
-ggsave("/scratch/khandl/technical/figures/gene_counts_across_datasets/technology.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(gene_counts_plots_dir, "technology.svg"), width = 8, height = 8, plot = p)
 
 ## statistical test --> one way ANOVA 
 anova <- aov(median_nFeature ~ technology, data = df)
@@ -454,7 +452,7 @@ p <- ggplot(df, aes(x = reorder(species, median_nFeature, FUN = median), y =  me
   theme_minimal() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_manual(values = c("Hs" = "#5E82EA", "Mm" = "#DD6637"))
-ggsave("/scratch/khandl/technical/figures/gene_counts_across_datasets/species.svg", width = 5, height = 8, plot = p)
+ggsave(file.path(gene_counts_plots_dir, "species.svg"), width = 5, height = 8, plot = p)
 
 ## statistical test 
 Mm <- df[df$species %in% "Mm",]

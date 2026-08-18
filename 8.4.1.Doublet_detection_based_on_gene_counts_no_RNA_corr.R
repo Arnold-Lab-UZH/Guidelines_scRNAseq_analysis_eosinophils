@@ -1,15 +1,13 @@
 ######### This code identifies and analyses doublets based on gene counts  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.6.Functions_Doublet_detection.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.6.Functions_Doublet_detection.R"))
 
 ##### Load annotated object 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated.rds"))
 
 ##### Define a treshold as the upper 99th percentile of nFeature_RNA in FeatureScatter plot 
 # Show the example of experiment 2 
@@ -19,9 +17,10 @@ nf <- sub$nFeature_RNA
 upper_q99 <- quantile(nf, 0.99)
 p <- FeatureScatter(sub, "nCount_RNA", "nFeature_RNA", group.by="orig.ident", pt.size=.5)+   geom_point(color = "#0C8EEF") + 
   geom_hline(yintercept = upper_q99, color="darkred", linetype="dashed")
-ggsave("/scratch/khandl/technical/figures/Doublet/FeatureScatter_example.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "FeatureScatter_example.svg"), width = 10, height = 8, plot = p)
 
 ##### Annotate the doublets based on the individual cutoff 
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 exp1 <- annotate_doublets_based_on_upper99th_percentile(obj, "Exp1") 
 exp2 <- annotate_doublets_based_on_upper99th_percentile(obj, "Exp2") 
 exp3 <- annotate_doublets_based_on_upper99th_percentile(obj, "Exp3") 
@@ -99,7 +98,7 @@ sample <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 multiplet_rate_per_sample <- c(1.002185,1.001771,1.005496,1.007028,0.9962049,1.001535,1.001208)
 df <- data.frame(sample, multiplet_rate_per_sample)
 df$method <- "nFeature_upper_cutoff"
-write.csv(df,"/scratch/khandl/technical/figures/Doublet/nFeature_upper_cutoff_doublet_rate_no_corr.csv")
+write.csv(df,file.path(doublet_tables_dir, "nFeature_upper_cutoff_doublet_rate_no_corr.csv"))
 
 ##### Extract doublets and deconvolute 
 Idents(obj) <- "doublet_singlet"
@@ -113,7 +112,7 @@ colnames(df) <- colnames(sub)
 df <- as.data.frame(df)
 
 ### Generate reference (need NAT, tumor)
-reference <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+reference <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 Idents(reference) <- "annotation"
 reference <- subset(reference, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial","Fibroblasts", "Macrophages",
@@ -162,8 +161,8 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
 
 ### Save deconvolution result
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/upperFeature_cutoff_doublets_deconvolution_result_no_corr.csv")
+write.csv(deconvolution_crc_df,file.path(doublet_tables_dir, "upperFeature_cutoff_doublets_deconvolution_result_no_corr.csv"))
 
 ##### Save Seurat object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated_gene_count_cutoff.rds")
+saveRDS(obj, file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_annotated_gene_count_cutoff.rds"))
 

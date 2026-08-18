@@ -1,14 +1,12 @@
 ########## This code uses scCDC for ambient RNA quantification  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load R object
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS( file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Run for each expriment/cartridge separate  
 ### Exp 1 
@@ -18,7 +16,7 @@ sub <- subset(obj, idents = "Exp1")
 ## Define contamination-causing genes (GCGs) 
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 ## Quantify contamination per celltype 
@@ -54,7 +52,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp2")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts", "Macrophages","Mast",
                 "Monocytes","Neutrophils","PCs","TAMs", "T")
@@ -88,7 +86,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp3")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts", "Macrophages","Mast",
@@ -119,7 +117,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp4")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts", "Macrophages","Mast",
@@ -151,7 +149,7 @@ Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp5")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts", "Macrophages","Mast",
@@ -177,12 +175,12 @@ for(i in cell_types) {
 contamination_values <- c(0.01996,0.02087,0.02113,0.01198,0.0401,0.01948,0.01792,0.01949,0.01876,0.00967,0.19891,0.01607,0.01863)
 df10 <- data.frame(cell_types, contamination_values)
 
-### Exp 7 
+### Exp 7 = patient 6
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp7")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts", "Macrophages","Mast",
@@ -208,12 +206,12 @@ for(i in cell_types) {
 contamination_values <- c(0.0232,0.02355,0.0209,0.006,0.02362,0.02025,0.02132,0.02115,0.01867,0.03853,0.23419,0.02255,0.01855)
 df12 <- data.frame(cell_types, contamination_values)
 
-### Exp 8 
+### Exp 8 = patient 7
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp8")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Endothelial", "Eosinophils","Fibroblasts", "Macrophages","Mast",
@@ -230,6 +228,7 @@ cell_types <- c("B","DCs","Endothelial", "Eosinophils","Epithelial","Fibroblasts
                 "Monocytes","Neutrophils","PCs","TAMs", "T")
 contamination_values <- c(0.05741,0.05261,0.05691,0.07853,0.0,0.05717,0.05546,0.05854,0.05437,0.05564,0.20399,0.0,0.05951)
 df13 <- data.frame(cell_types, contamination_values)
+
 Idents(sub) <- "condition"
 sub_2 <- subset(sub, idents = "P7_tumor")
 for(i in cell_types) {
@@ -238,11 +237,14 @@ for(i in cell_types) {
   ContaminationQuantification(sub2,rownames(GCGs))
   print(i)
 }
+
 contamination_values <- c(0.06375,0.04987,0.05036,0.06502,0.03774,0.05851,0.04837,0.0534,0.05087,0.05048,0.21745,0.03911,0.05703)
 df14 <- data.frame(cell_types, contamination_values)
 
-##### Save dataframe with contamination values per cell type 
-write.csv(df,"/scratch/khandl/technical/figures/Ambient_RNA/scCDC_Hs.csv")
+##### Merge dataframes of contamination and save dataframe for later 
+df <- bind_rows(list(df1,df2,df3,df4,df5,df6,df7,df8,df9,df10,df11,df12,df13,df14))
+write.csv(df,file.path(ambient_rna_tables_dir, "scCDC_Hs.csv"))
+
 
 
 

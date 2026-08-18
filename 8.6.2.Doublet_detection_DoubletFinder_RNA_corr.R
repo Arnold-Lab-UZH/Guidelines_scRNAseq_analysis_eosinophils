@@ -1,14 +1,12 @@
 ######### This code identifies and analyses doublets based on DoubletFinder  ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load annotated data 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated.rds"))
 
 ##### Run for each experiment separately 
 ### Exp1 
@@ -121,7 +119,7 @@ sub$DoubletFinder_score <- sub$pANN_0.25_0.29_2242
 sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.29_2242
 sub_exp5 <- sub
 
-### Exp7
+### Exp7 = patient 6
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp7")
 
@@ -143,7 +141,7 @@ sub$DoubletFinder_score <- sub$pANN_0.25_0.24_3156
 sub$DoubletFinder_class <- sub$DF.classifications_0.25_0.24_3156
 sub_exp7 <- sub
 
-### Exp8
+### Exp8 = patient7
 Idents(obj) <- "experiment"
 sub <- subset(obj, idents = "Exp8")
 
@@ -171,7 +169,7 @@ obj <- JoinLayers(obj)
 
 ##### pre-process and cluster 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$experiment)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -183,7 +181,7 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.5, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "annotation",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "annotation", label = TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
 Idents(obj) <- "annotation"
@@ -191,9 +189,10 @@ sub <- subset(obj, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial"
 Idents(sub) <- "experiment"
 sub <- subset(sub, idents = "Exp2")
 p <- FeaturePlot(sub, features = "DoubletFinder_score", reduction = "umap.mnn",cols = c("white","darkred") )
-ggsave("/scratch/khandl/technical/figures/Doublet/DoubletFinder_umap.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(doublet_plots_dir, "DoubletFinder_umap.svg"), width = 8, height = 8, plot = p)
 
 ##### calculate percentage of doublet rate 
+# experiment 7 = h6/P6, experiment 8 = H7/P7
 experimet_ids <- c("Exp1","Exp2","Exp3","Exp4", "Exp5","Exp7", "Exp8")
 for (i in experimet_ids) {
   Idents(obj) <- "experiment"
@@ -210,7 +209,7 @@ sample <- c("Exp1","Exp2","Exp3","Exp4","Exp5","Exp7","Exp8")
 multiplet_rate_per_sample <- c(12.90491,12.34505,13.30877,12.18924,9.668794,11.0134,11.04189)
 df <- data.frame(sample, multiplet_rate_per_sample)
 df$method <- "DoubletFinder"
-write.csv(df,"/scratch/khandl/technical/figures/Doublet/DoubletFinder_doublet_rate_corr.csv")
+write.csv(df,file.path(doublet_tables_dir, "DoubletFinder_doublet_rate_corr.csv"))
 
 ##### extract doublets and deconvolute 
 Idents(obj) <- "DoubletFinder_class"
@@ -225,7 +224,7 @@ colnames(df) <- colnames(sub)
 df <- as.data.frame(df)
 
 ### generate reference (need NAT, tumor)
-hs <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
+hs <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 Idents(hs) <- "annotation"
 hs <- subset(hs, idents = c("B","DCs","Endothelial","Eosinophils","Epithelial","Fibroblasts", "Macrophages",
@@ -279,7 +278,7 @@ deconvolution_crc <- SCDC::SCDC_prop(bulk.eset = eset_ST, sc.eset = eset_SC, ct.
                                      ct.sub = as.character(unique(eset_SC$annotation)))
 
 deconvolution_crc_df <- as.data.frame(deconvolution_crc$prop.est.mvw)
-write.csv(deconvolution_crc_df,"/scratch/khandl/technical/figures/Doublet/DoubletFinder_wo_doublets_deconvolution_result_corr.csv")
+write.csv(deconvolution_crc_df,file.path(doublet_tables_dir, "DoubletFinder_wo_doublets_deconvolution_result_corr.csv"))
 
 ##### save Seurat object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_DoubletFinder.rds")
+saveRDS(obj, file.path(seurat_objects_dir, "Singlets_and_Doublets_Hs_NAT_tumor_PB_P1_to_P7_scCDC_annotated_DoubletFinder.rds"))

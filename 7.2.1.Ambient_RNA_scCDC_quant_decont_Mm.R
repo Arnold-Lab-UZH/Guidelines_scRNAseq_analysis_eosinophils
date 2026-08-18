@@ -1,14 +1,12 @@
 ########## This code uses scCDC for ambient RNA detection and decontamination  ##########
 ### Datasets used: GSE282765; Mm colon healthy, CRC tumor, NAT, disseminated 
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load R object 
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ### Change the cell type label ? to Undefined 
 current.cluster.ids <- c("?","B","DCs", "Eosinophils", "lowQ", "Macrophages","Mast","Mixed",
@@ -30,7 +28,7 @@ sub <- subset(obj, idents = "batch1")
 ## Define contamination-causing genes (GCGs) 
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 ## Quantify contamination per celltype for each sample within batch 
@@ -73,7 +71,7 @@ Idents(obj) <- "batch"
 sub <- subset(obj, idents = "batch2")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Eosinophils","Macrophages","Mast","Monocytes","Neutrophils","T","TAMs","PCs")
@@ -95,7 +93,7 @@ Idents(obj) <- "batch"
 sub <- subset(obj, idents = "batch3")
 DefaultAssay(sub) <- "RNA"
 Idents(sub) <- "annotation"
-GCGs <-  ContaminationDetection(sub,out_path.plot = "/scratch/khandl/technical/figures/Ambient_RNA/")
+GCGs <-  ContaminationDetection(sub,out_path.plot = file.path(ambient_rna_plots_dir, "GCGs/"))
 rownames(GCGs)
 
 cell_types <- c("B","DCs","Eosinophils","Macrophages","Mast","Monocytes","Neutrophils","T","TAMs","PCs")
@@ -115,7 +113,7 @@ batch3_corrected = ContaminationCorrection(sub,rownames(GCGs))
 df <- rbind(df1,df2)
 df <- rbind(df, df3)
 df <- rbind(df, df4)
-write.csv(df,"/scratch/khandl/technical/figures/Ambient_RNA/scCDC_mM.csv")
+write.csv(df,file.path(ambient_rna_tables_dir, "scCDC_mM.csv"))
 
 ##### Merge Seurat objects 
 merged <- merge(batch1_corrected, y = c(batch2_corrected, batch3_corrected))
@@ -126,7 +124,7 @@ merged <- JoinLayers(merged)
 ### Pre-processing 
 DefaultAssay(merged) <- "Corrected"
 merged[["Corrected"]] <- split(merged[["Corrected"]], f = merged$condition)
-merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1)
+merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1)
 merged <- FindVariableFeatures(merged)
 merged <- ScaleData(merged,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 merged <- RunPCA(merged, features = VariableFeatures(object =merged), npcs = 20, verbose = FALSE)
@@ -138,17 +136,17 @@ ElbowPlot(merged)
 merged <- FindNeighbors(merged, reduction = "integrated.mnn", dims = 1:15, graph.name = "integrated.mnn_snn")
 merged <- FindClusters(merged, resolution = 0.8, cluster.name = "mnn.clusters", algorithm = 2,graph.name = "integrated.mnn_snn")
 merged <- RunUMAP(merged, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(merged,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(merged,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 merged <- JoinLayers(merged)
 
 ##### Plot Ccr3 to identify eos in UMAP 
 p <- FeaturePlot(merged, features = "Ccr3", reduction = "umap.mnn", pt.size = 0.1) + scale_color_gradientn( colours = c('grey', 'darkred'),  limits = c(0,5))
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/scCDC_Ccr3.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "scCDC_Ccr3.svg"), width = 10, height = 8, plot = p)
 
 ## compare with RNA assay 
 DefaultAssay(obj) <- "RNA"
 p <- FeaturePlot(obj, features = "Ccr3", reduction = "umap.mnn", pt.size = 0.1) + scale_color_gradientn( colours = c('grey', 'darkred'),  limits = c(0,5))
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/RNA_Ccr3.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "RNA_Ccr3.svg"), width = 10, height = 8, plot = p)
 
 ##### Transfer of annotation based on matching cell IDs 
 cell_types <- (as.data.frame(table(obj$annotation)))$Var1
@@ -188,5 +186,4 @@ table(merged$annotation)
 DimPlot(merged, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Save object 
-saveRDS(merged, "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_scCDC.rds")
-
+saveRDS(merged, file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_scCDC.rds"))

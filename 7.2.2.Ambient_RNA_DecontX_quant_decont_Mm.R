@@ -1,14 +1,12 @@
 ########## This code uses DecontX for ambient RNA detection and decontamination  ##########
 ### Datasets used: GSE282765; Mm colon healthy, CRC tumor, NAT, disseminated 
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load R object 
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS( file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ### Change the cell type label ? to Undefined 
 current.cluster.ids <- c("?","B","DCs", "Eosinophils", "lowQ", "Macrophages","Mast","Mixed",
@@ -32,7 +30,7 @@ obj$decontX_contamination <- colData(sce)$decontX_contamination
 Idents(obj) <- "condition"
 sub <- subset(obj, idents = "tumor_wt")
 p <- FeaturePlot(sub, features = c("decontX_contamination")) +scale_color_gradientn( colours = c('darkblue',"yellow" ,'darkred'))
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/DecontX_feature_plot_Mm.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "DecontX_feature_plot_Mm.svg"), width = 10, height = 8, plot = p)
 
 ### Generate a dataframe of decontX_contamination for each sample and cell types 
 conditions <- (as.data.frame(table(obj$condition)))$Var1
@@ -53,7 +51,7 @@ df <- bind_rows(df_list)
 df <- df[df$celltype %in% c("Eosinophils","Neutrophils","B","T","Monocytes",
                             "Mast","PCs","Macrophages","TAMs","DCs"),]
 ### save data frame 
-write.csv(df,"/scratch/khandl/technical/figures/Ambient_RNA/decontX_mM.csv")
+write.csv(df,file.path(ambient_rna_tables_dir, "decontX_mM.csv"))
 
 ##### Convert the decontaminated count matrix back to a Seurat object 
 ### Round because Seurat needs integers 
@@ -61,7 +59,7 @@ merged <- CreateSeuratObject(round(decontXcounts(sce)))
 merged$condition <- obj$condition
 
 ### Add mitochondrial ratio 
-merged$percent.mt <- PercentageFeatureSet(merged, pattern = "^mt.")
+merged$percent.mt <- PercentageFeatureSet(merged, pattern = "^mt-")
 
 ##### Clustering 
 ### Pre-processing 
@@ -71,7 +69,7 @@ keep_cells <- complete.cases(merged@meta.data[, c("percent.mt", "nCount_RNA", "n
 merged <- subset(merged, cells = Cells(merged)[keep_cells])
 
 merged[["RNA"]] <- split(merged[["RNA"]], f = merged$condition)
-merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1)
+merged <- NormalizeData(merged,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1)
 merged <- FindVariableFeatures(merged)
 merged <- ScaleData(merged,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 merged <- RunPCA(merged, features = VariableFeatures(object =merged), npcs = 20, verbose = FALSE)
@@ -83,12 +81,12 @@ ElbowPlot(merged)
 merged <- FindNeighbors(merged, reduction = "integrated.mnn", dims = 1:15, graph.name = "integrated.mnn_snn")
 merged <- FindClusters(merged, resolution = 0.8, cluster.name = "mnn.clusters", algorithm = 2,graph.name = "integrated.mnn_snn")
 merged <- RunUMAP(merged, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(merged,reduction = "umap.mnn",group.by = "mnn.clusters",raster=TRUE, label = TRUE, label.size = 8)
+DimPlot(merged,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, label.size = 8)
 merged <- JoinLayers(merged)
 
 ##### Plot Ccr3 to identify eos in UMAP 
 p <- FeaturePlot(merged, features = "Ccr3", reduction = "umap.mnn", pt.size = 0.1) + scale_color_gradientn( colours = c('grey', 'darkred'),  limits = c(0,5))
-ggsave("/scratch/khandl/technical/figures/Ambient_RNA/decontX_Ccr3.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(ambient_rna_plots_dir, "decontX_Ccr3.svg"), width = 10, height = 8, plot = p)
 
 ##### Transfer of annotation based on matching cell IDs 
 cell_types <- (as.data.frame(table(obj$annotation)))$Var1
@@ -128,4 +126,4 @@ table(merged$annotation)
 DimPlot(merged, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Save object 
-saveRDS(merged, "/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_decontX.rds")
+saveRDS(merged, file.path(seurat_objects_dir, "Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated_decontX.rds"))

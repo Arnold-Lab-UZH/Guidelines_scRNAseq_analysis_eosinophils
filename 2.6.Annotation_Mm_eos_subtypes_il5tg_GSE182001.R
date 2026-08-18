@@ -1,13 +1,11 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of Mm eosinophil subtypes from GSE182001  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load annotated R object from 2.5 
-obj <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ##### Extract Eosinophils and EoP 
 Idents(obj) <- "annotation"
@@ -16,7 +14,7 @@ obj <- subset(obj, idents =c("EoP","Eosinophils"))
 ##### Clustering 
 ### Pre-processing 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -33,9 +31,8 @@ obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "mnn.clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -61,7 +58,7 @@ DotPlot(obj, features = goi,dot.scale = 10, scale = TRUE, assay = "RNA",cols = c
 current.cluster.ids <- c(0:6)
 new.cluster.ids <- c("circulating","lowQ","active","basal","basal" ,"immature","progenitor")
 obj$annotation <- plyr::mapvalues(x = obj$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(obj, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Check annotation 
 Idents(obj) <- "annotation"
@@ -80,5 +77,5 @@ obj$technology <- "BD"
 obj$enrichment <- obj$cell_enrichment
 
 ##### Save object 
-saveRDS(obj,"/scratch/khandl/technical/seurat_objects/Mm_il5tg_eos_annotation.rds")
+saveRDS(obj,file.path(seurat_objects_dir,"Mm_il5tg_eos_annotation.rds"))
 

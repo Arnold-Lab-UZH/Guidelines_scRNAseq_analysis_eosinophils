@@ -1,14 +1,12 @@
 ########### This code analyses pseudotime trajectory from BM to colon eosinophils comparing il5-tg and WT ##########
 ### Datasets used: GSE182001, GSE282765
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### read in seurat objects 
-obj <- readRDS( "/scratch/khandl/technical/seurat_objects/wt_il5tg_bm_colon_annotated.rds")
+obj <- readRDS(file.path(seurat_objects_dir,"wt_il5tg_bm_colon_annotated.rds"))
 obj <- JoinLayers(obj)
 
 ##### Slingshot analysis 
@@ -46,7 +44,7 @@ p <- ggplot(df, aes(x = umapmnn_1, y = umapmnn_2, col = slingPseudotime_1)) +
   labs(col = "Pseudotime") +
   geom_path(data = curve$s[curve$ord, ] %>% as.data.frame(),
             col = "black", size = 1.5) +  theme_classic(base_size = 25) 
-ggsave(paste0("/scratch/khandl/technical/figures/wt_il5tg/umap_pseudotime.svg"), width = 8, height = 5, plot = p)
+ggsave(paste0(file.path(wt_il5tg_plots_dir, "umap_pseudotime.svg")), width = 8, height = 5, plot = p)
 
 ### Differential progression between wt and il5tg 
 ## density plot 
@@ -60,5 +58,5 @@ p <- ggplot(df, aes(x = slingPseudotime_1)) +
   )) +
   scale_fill_brewer(palette = "Accent") +
   scale_color_brewer(palette = "Accent")
-ggsave(paste0("/scratch/khandl/technical/figures/wt_il5tg/pseudotime_density_plot.svg"), width = 8, height = 5, plot = p)
+ggsave(paste0(file.path(wt_il5tg_plots_dir, "pseudotime_density_plot.svg")), width = 8, height = 5, plot = p)
 

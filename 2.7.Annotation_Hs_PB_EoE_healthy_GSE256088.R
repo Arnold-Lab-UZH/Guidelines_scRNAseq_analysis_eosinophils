@@ -1,20 +1,18 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of Hs PB from healthy and EoE patients from GSE256088  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir,"1.2.Functions_Seurat_integration.R"))
 
 ##### Seurat object generation 
-PB_ctrl1 <- create_seurat_10X_structured_data( "/scratch/khandl/2.EoE_Morgenstern2024_Morgan2021/GSE256088_RAW/PB_ctrl1","EoE",3,200, "PB_ctrl1","PB_healhty","EoE_Exp1","healthy")
-PB_ctrl2 <- create_seurat_10X_structured_data( "/scratch/khandl/2.EoE_Morgenstern2024_Morgan2021/GSE256088_RAW/PB_ctrl2","EoE",3,200, "PB_ctrl2","PB_healhty","EoE_Exp2","healthy")
-PB_ctrl3 <- create_seurat_10X_structured_data( "/scratch/khandl/2.EoE_Morgenstern2024_Morgan2021/GSE256088_RAW/PB_ctrl3","EoE",3,200, "PB_ctrl3","PB_healhty","EoE_Exp3","healthy")
+PB_ctrl1 <- create_seurat_10X_structured_data( file.path(raw_data_GSE256088_dir, "PB_ctrl1"),"EoE",3,200, "PB_ctrl1","PB_healthy","EoE_Exp1","healthy")
+PB_ctrl2 <- create_seurat_10X_structured_data( file.path(raw_data_GSE256088_dir, "PB_ctrl2"),"EoE",3,200, "PB_ctrl2","PB_healthy","EoE_Exp2","healthy")
+PB_ctrl3 <- create_seurat_10X_structured_data( file.path(raw_data_GSE256088_dir, "PB_ctrl3"),"EoE",3,200, "PB_ctrl3","PB_healthy","EoE_Exp3","healthy")
 
-PB_EoE1 <- create_seurat_10X_structured_data( "/scratch/khandl/2.EoE_Morgenstern2024_Morgan2021/GSE256088_RAW/PB_EoE1","EoE",3,200, "PB_EoE1","PB_EoE","EoE_Exp1","EoE")
-PB_EoE2 <- create_seurat_10X_structured_data( "/scratch/khandl/2.EoE_Morgenstern2024_Morgan2021/GSE256088_RAW/PB_EoE2","EoE",3,200, "PB_EoE2","PB_EoE","EoE_Exp2","EoE")
-PB_EoE3 <- create_seurat_10X_structured_data( "/scratch/khandl/2.EoE_Morgenstern2024_Morgan2021/GSE256088_RAW/PB_EoE3","EoE",3,200, "PB_EoE3","PB_EoE","EoE_Exp3","EoE")
+PB_EoE1 <- create_seurat_10X_structured_data( file.path(raw_data_GSE256088_dir, "PB_EoE1"),"EoE",3,200, "PB_EoE1","PB_EoE","EoE_Exp1","EoE")
+PB_EoE2 <- create_seurat_10X_structured_data( file.path(raw_data_GSE256088_dir, "PB_EoE2"),"EoE",3,200, "PB_EoE2","PB_EoE","EoE_Exp2","EoE")
+PB_EoE3 <- create_seurat_10X_structured_data( file.path(raw_data_GSE256088_dir, "PB_EoE3"),"EoE",3,200, "PB_EoE3","PB_EoE","EoE_Exp3","EoE")
 
 ### Merge samples
 blood <- merge(PB_ctrl1, y = c(PB_ctrl2, PB_ctrl3,PB_EoE1,PB_EoE2,PB_EoE3),
@@ -31,7 +29,7 @@ blood <- subset(blood, subset = percent.mt < 25)
 ### Pre-processing 
 obj <- blood
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -49,9 +47,8 @@ obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "mnn.clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -118,5 +115,5 @@ obj$cell_enrichment <- "Eosinophils"
 obj$tissue <- "blood"
 
 ##### Save object 
-saveRDS(obj, file = "/scratch/khandl/technical/seurat_objects/Hs_blood_GSE256088_et_al_anno.rds")
+saveRDS(obj, file = file.path(seurat_objects_dir,"Hs_blood_GSE256088_et_al_anno.rds"))
 

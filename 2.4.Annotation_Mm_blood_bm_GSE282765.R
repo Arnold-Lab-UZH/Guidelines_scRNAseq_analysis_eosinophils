@@ -1,28 +1,26 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of blood and BM of healthy mice and AKPS CRC mice from GSE282765  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir,"1.2.Functions_Seurat_integration.R"))
 
 ##### Seurat object generation 
 ### Forced cell determination - intronic and exonic reads 
 blood_wt <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Forced_cell_determination_intronic_and_exonic_reads", "Forced_cell_determination_intronic_and_exonic_Mm_blood_healthy_ST11_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_forced_intron_exon_dir, "Forced_cell_determination_intronic_and_exonic_Mm_blood_healthy_ST11_Expression_Data.st"), 
   project = "blood_wt", condition = "blood_wt",3,200)
 
 blood_tumor <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Forced_cell_determination_intronic_and_exonic_reads", "Forced_cell_determination_intronic_and_exonic_Mm_blood_AKPS_tumor_ST12_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_forced_intron_exon_dir, "Forced_cell_determination_intronic_and_exonic_Mm_blood_AKPS_tumor_ST12_Expression_Data.st"), 
   project = "blood_tumor", condition = "blood_tumor",3,200)
 
 bm_wt <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Forced_cell_determination_intronic_and_exonic_reads", "Forced_cell_determination_intronic_and_exonic_Mm_bm_healthy_ST09_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_forced_intron_exon_dir, "Forced_cell_determination_intronic_and_exonic_Mm_bm_healthy_ST09_Expression_Data.st"), 
   project = "bm_wt", condition = "bm_wt",3,200)
 
 bm_tumor <- create_seurat_Mm_data(
-  path_to_st_file = file.path("/scratch/khandl/technical","Mm_blood_bm_CRC_AKPS_healthy/Forced_cell_determination_intronic_and_exonic_reads", "Forced_cell_determination_intronic_and_exonic_Mm_bm_AKPS_tumor_ST10_Expression_Data.st"), 
+  path_to_st_file = file.path(raw_data_GSE282765_Mm_bm_blood_forced_intron_exon_dir, "Forced_cell_determination_intronic_and_exonic_Mm_bm_AKPS_tumor_ST10_Expression_Data.st"), 
   project = "bm_tumor", condition = "bm_tumor",3,200)
 
 ### Merge samples
@@ -31,7 +29,7 @@ tumor <- merge(blood_wt, y = c(blood_tumor, bm_wt, bm_tumor),
 tumor <- JoinLayers(tumor)
 
 ### Add mitochondrial percentage per cell 
-tumor$percent.mt <- PercentageFeatureSet(tumor, pattern = "^mt.")
+tumor$percent.mt <- PercentageFeatureSet(tumor, pattern = "^mt-")
 
 ### Add conditions to metadata 
 tumor$cell_determination <- "forced"
@@ -41,10 +39,10 @@ tumor$technology <- "BD_Rhapsody"
 tumor$cell_enrichment  <- "Eosinophils"
 
 ### Save object
-saveRDS(tumor, file = "/scratch/khandl/4.Technical/Forced_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds")
+saveRDS(tumor, file = file.path(seurat_objects_dir,"Forced_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds"))
 
 ##### Load R object 
-obj <- readRDS(file = "/scratch/khandl/4.Technical/Forced_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds")
+obj <- readRDS(file = file.path(seurat_objects_dir,"Forced_cell_determination_intronic_and_exonic_reads_Mm_healthy_CRC_blood_bm.rds"))
 
 ### Apply mitochondrial cutoff 
 obj <- subset(obj, subset = percent.mt < 25)
@@ -52,7 +50,7 @@ obj <- subset(obj, subset = percent.mt < 25)
 ##### Clustering 
 ### Pre-processing 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$condition)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -64,14 +62,13 @@ ElbowPlot(obj)
 obj <- FindNeighbors(obj, reduction = "integrated.mnn", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.8, cluster.name = "mnn.clusters", algorithm = 2)
 obj <- RunUMAP(obj, reduction = "integrated.mnn", dims = 1:15, reduction.name = "umap.mnn")
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=FALSE, label= TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label= TRUE, label.size = 8)
 obj <- JoinLayers(obj)
 
 ##### Cluster annotation 
 ### DEGs per cluster 
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "mnn.clusters"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 ### nFeature and percent.mito per cluster to exclude low quality clusters 
@@ -96,7 +93,7 @@ DotPlot(obj, features =  unique(c("Tpsab1", "Tpsb2","Kit", # Mast cells
                                   "Pecam1" ,# Endothelial 
                                   "Mki67","Msi1","Meis1", # MPPs
                                   "Cd34","Cebpa", # GMPs
-                                  "Elane","Cepbe", # ProNeutro
+                                  "Elane","Cebpe", # ProNeutro
                                   "Ly6c2","Csf2r","Irf8", # ProMono
                                   "Flt3","Dntt","Il7r", # CLPs
                                   "Epx","Ear1","Ear2" # EoP
@@ -110,7 +107,7 @@ new.cluster.ids <- c("Neutrophils","Neutrophils","Neutrophils","Neutrophils", "M
                      "Monocytes","Mixed", "?","DCs","EoP",
                      "?","Macrophages")
 obj$annotation <- plyr::mapvalues(x = obj$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(obj, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster ProMono_GMPs
 Idents(obj) <- "annotation"
@@ -130,16 +127,15 @@ DotPlot(sub_celltype, features =  unique(c("Tpsab1", "Tpsb2","Kit", # Mast cells
                                   "F13a1", "Folr2","C1qc" ,# Macrophages 
                                   "Mki67","Msi1","Meis1", # MPPs
                                   "Cd34","Cebpa", # GMPs
-                                  "Elane","Cepbe", # ProNeutro
+                                  "Elane","Cebpe", # ProNeutro
                                   "Ly6c2","Csf2r","Irf8", # ProMono
                                   "Flt3","Dntt","Il7r", # CLPs
                                   "Epx","Ear1","Ear2" # EoP
 )), scale = FALSE) + theme(axis.text.x = element_text(angle = 90)) 
 # 1 = GMPs, 0,2 = ProMono
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(sub_celltype) <- "sub.cluster"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 
 # Rename
@@ -148,7 +144,7 @@ current.cluster.ids <- c( "?","Basophils", "DCs","EoP","Eosinophils","lowQ","Mac
 new.cluster.ids <- c("?","Basophils", "DCs","EoP","Eosinophils","lowQ","Macrophages","Mixed","Monocytes","Neutrophils",
                      "ProMono","GMPs","ProMono", "ProNeutro","T_PCs")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Subcluster T_PCs
 Idents(subCl) <- "annotation"
@@ -160,9 +156,8 @@ Idents(subCl) <- "sub.cluster"
 sub_celltype <- subset(subCl,idents = c( "T_PCs_0","T_PCs_1","T_PCs_2","T_PCs_3"))
 DimPlot(sub_celltype, reduction = "umap.mnn", label = TRUE, group.by = "sub.cluster")
 
-sub_celltype <- NormalizeData(sub_celltype, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(sub_celltype) <- "sub.cluster"
-markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = sub_celltype, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =10, wt = avg_log2FC))
 # 1 = T ; 2 PCs 
 FeaturePlot(sub_celltype, features = c("Cd19","Cd3e","Mpl","Mki67","Meis1"))
@@ -174,7 +169,7 @@ current.cluster.ids <- c("?","Basophils", "DCs","EoP","Eosinophils","GMPs","lowQ
 new.cluster.ids <- c("?","Basophils", "DCs","EoP","Eosinophils","GMPs","lowQ","Macrophages","Mixed","Monocytes","Neutrophils",
                      "ProMono","ProNeutro", "Mixed","T","B","HSCs")
 subCl$annotation <- plyr::mapvalues(x = subCl$sub.cluster, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(subCl, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn")
+DimPlot(subCl, group.by = "annotation", label = TRUE,reduction = "umap.mnn")
 
 ### Check annotation
 obj <- subCl
@@ -196,7 +191,7 @@ DotPlot(obj, features =  unique(c("Tpsab1", "Tpsb2","Kit", # Mast cells
                                   "Pecam1" ,# Endothelial 
                                   "Mki67","Msi1","Meis1", # MPPs
                                   "Cd34","Cebpa", # GMPs
-                                  "Elane","Cepbe", # ProNeutro
+                                  "Elane","Cebpe", # ProNeutro
                                   "Ly6c2","Csf2r","Irf8", # ProMono
                                   "Flt3","Dntt","Il7r", # CLPs
                                   "Epx","Ear1","Ear2" # EoP
@@ -211,5 +206,5 @@ obj$technology <- "BD"
 obj$enrichment <- obj$cell_enrichment
 
 ##### Save object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
+saveRDS(obj, file.path(seurat_objects_dir,"Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds"))
 

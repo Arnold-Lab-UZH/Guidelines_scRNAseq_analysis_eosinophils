@@ -1,20 +1,18 @@
 ########## This code does sample integration, pre-processing, clustering and annotation of Hs PB from asthma patients and healthy individuals from E-MTAB-14010  ##########
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.2.Functions_Seurat_integration.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir,"1.2.Functions_Seurat_integration.R"))
 
 ##### Seurat object generation 
-PB_ctrl1 <- create_seurat_10X_structured_data( "/scratch/khandl/4.E-MTAB-14010/Control1","Control1",3,200, "PB_control1","PB_healhty","Exp1","healthy")
-PB_ctrl2 <- create_seurat_10X_structured_data( "/scratch/khandl/4.E-MTAB-14010/Control2","Control",3,200, "PB_control2","PB_healhty","Exp1","healthy")
-PB_ctrl3 <- create_seurat_10X_structured_data( "/scratch/khandl/4.E-MTAB-14010/Control3","Control",3,200, "PB_control3","PB_healhty","Exp1","healthy")
+PB_ctrl1 <- create_seurat_10X_structured_data( file.path(raw_data_E_MTAB_14010_dir,"Control1"),"Control1",3,200, "PB_control1","PB_healthy","Exp1","healthy")
+PB_ctrl2 <- create_seurat_10X_structured_data( file.path(raw_data_E_MTAB_14010_dir,"Control2"),"Control",3,200, "PB_control2","PB_healthy","Exp1","healthy")
+PB_ctrl3 <- create_seurat_10X_structured_data( file.path(raw_data_E_MTAB_14010_dir,"Control3"),"Control",3,200, "PB_control3","PB_healthy","Exp1","healthy")
 
-PB_asthma1 <- create_seurat_10X_structured_data( "/scratch/khandl/4.E-MTAB-14010/Astma1","Asthma",3,200, "PB_asthma1","PB_Asthma","Exp1","asthma")
-PB_asthma2 <-  create_seurat_10X_structured_data( "/scratch/khandl/4.E-MTAB-14010/Astma2","Asthma",3,200, "PB_asthma2","PB_Asthma","Exp1","asthma")
-PB_asthma3 <- create_seurat_10X_structured_data( "/scratch/khandl/4.E-MTAB-14010/Astma3","Asthma",3,200, "PB_asthma3","PB_Asthma","Exp1","asthma")
+PB_asthma1 <- create_seurat_10X_structured_data( file.path(raw_data_E_MTAB_14010_dir,"Asthma1"),"Asthma",3,200, "PB_asthma1","PB_Asthma","Exp1","asthma")
+PB_asthma2 <-  create_seurat_10X_structured_data( file.path(raw_data_E_MTAB_14010_dir,"Asthma2"),"Asthma",3,200, "PB_asthma2","PB_Asthma","Exp1","asthma")
+PB_asthma3 <- create_seurat_10X_structured_data( file.path(raw_data_E_MTAB_14010_dir,"Asthma3"),"Asthma",3,200, "PB_asthma3","PB_Asthma","Exp1","asthma")
 
 ### Merge samples
 obj <- merge(PB_ctrl1, y = c(PB_ctrl2, PB_ctrl3,PB_asthma1,PB_asthma2,PB_asthma3),
@@ -28,7 +26,7 @@ obj$percent.mt <- PercentageFeatureSet(obj, pattern = "^MT-")
 obj <- subset(obj, subset = percent.mt < 25)
 
 ##### Clustering 
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -100,5 +98,5 @@ obj$cell_enrichment <- "Eosinophils"
 obj$tissue <- "blood"
 
 ##### Save object 
-saveRDS(obj, file = "/scratch/khandl/technical/seurat_objects/Hs_blood_E-MTAB-14010_anno.rds")
+saveRDS(obj, file = file.path(seurat_objects_dir,"Hs_blood_E-MTAB-14010_anno.rds"))
 

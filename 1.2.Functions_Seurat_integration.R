@@ -89,7 +89,7 @@ create_seurat_Hs_data_from_sparse_matrix <- function(
 create_seurat_Mm_data <- function(
     path_to_st_file,
     project,
-    condition, 
+    condition_oi, 
     min.cells,
     min.features
 ) {
@@ -98,14 +98,14 @@ create_seurat_Mm_data <- function(
                                         project = project,
                                         min.cells = min.cells,
                                         min.features = min.features)
-  condition_sample$condition <- condition
+  condition_sample$condition <- condition_oi
   return(condition_sample)
 }
 
 create_seurat_Mm_data_from_sparse_matrix <- function(
     input_matrix,
     project,
-    condition, 
+    condition_oi, 
     min.cells,
     min.features
 ) {
@@ -113,7 +113,7 @@ create_seurat_Mm_data_from_sparse_matrix <- function(
                                         project = project,
                                         min.cells = min.cells,
                                         min.features = min.features)
-  condition_sample$condition <- condition
+  condition_sample$condition <- condition_oi
   return(condition_sample)
 }
 
@@ -144,7 +144,7 @@ create_seurat_zUMI_outputs <- function(
     project,
     min.cells,
     min.features,
-    condition, 
+    condition_oi, 
     batch,
     tissue_oi,
     phenotype_oi
@@ -173,7 +173,7 @@ create_seurat_zUMI_outputs <- function(
                                     project = project,
                                     min.cells = min.cells,
                                     min.features = min.features)
-  seuratObject$condition <- condition
+  seuratObject$condition <- condition_oi
   seuratObject$batch <- batch 
   seuratObject$tissue <- tissue_oi
   seuratObject$phenotype <- phenotype_oi

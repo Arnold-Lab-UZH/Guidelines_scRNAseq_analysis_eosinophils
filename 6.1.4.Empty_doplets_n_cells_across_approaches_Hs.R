@@ -1,17 +1,15 @@
 ########## This code compares the number of cells per annotated cell type between different empty droplet identification tools ##########
 ### Datasets used: GSE282765; Hs CRC NAT and tumor;
 
-##### Set up environment 
-setwd("/data/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load Seurat objects 
-obj_forced <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
-obj_automatic <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_automatic_cell_determination_with_intronic_reads_annotated.rds")
-obj_emptyDrops <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_emptyDrops_determination_with_intronic_reads_annotated.rds")
-obj_Malat1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_MALAT1_determination_with_intronic_reads_annotated.rds")
+obj_forced <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
+obj_automatic <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_automatic_cell_determination_with_intronic_reads_annotated.rds"))
+obj_emptyDrops <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_emptyDrops_determination_with_intronic_reads_annotated.rds"))
+obj_Malat1 <- readRDS(file.path(seurat_objects_dir, "Hs_tumor_NAT_MALAT1_determination_with_intronic_reads_annotated.rds"))
 
 ## In BD forced rename ? to Undefined to match the other datasets 
 current.cluster.ids <- c("?", "B","DCs", "Endothelial","Eosinophils","Epithelial","Fibroblasts",
@@ -107,7 +105,7 @@ p <- ggplot(df, aes(x=reorder(annotation, value, FUN = median), y=as.numeric(val
   geom_boxplot(outlier.shape = 16) + theme_minimal() + 
   scale_fill_manual(values = c("BD_forced" = "#F4C80F", "BD_automatic" = "#890FF4","EmptyDrops" ="#60A4F4", "MALAT1"="#1C7F08" ))  +
   theme(axis.text.x = element_text(angle = 45)) 
-ggsave("/scratch/khandl/technical/figures/summary_empty/across_cell_types.svg", width = 20, height = 8, plot = p)
+ggsave(file.path(empty_droplets_plots_dir, "across_cell_types.svg"), width = 20, height = 8, plot = p)
 
 ##### pairwise Wilcoxon test BD automatic vs. the rest 
 df2 <- df[df$cell_determination %in% c("BD_automatic","BD_forced"),]
@@ -138,5 +136,5 @@ p <- ggplot(df2, aes(x=reorder(cell_determination, value, FUN = median), y=as.nu
   geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.75), size = 2.5, shape = 21)+ 
   scale_fill_manual(values = c("BD_forced" = "#F4C80F", "BD_automatic" = "#890FF4","EmptyDrops" ="#60A4F4", "MALAT1"="#1C7F08" )) + 
    theme(axis.text.x = element_text(angle = 45)) 
-ggsave("/scratch/khandl/technical/figures/summary_empty/Eos.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(empty_droplets_plots_dir, "Eos.svg"), width = 8, height = 8, plot = p)
 

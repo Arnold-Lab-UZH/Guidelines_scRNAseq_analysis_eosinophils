@@ -1,14 +1,12 @@
 ########## This code compares gene counts across eosinophil subtypes  ##########
 ### Datasets used: GSE182001
 
-##### Set up environment 
-setwd("/home/khandl")
-
-##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
+##### link to libraries and functions
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load annotated Seruat object 
-mouse_data_il5tg <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_eos_annotation.rds")
+mouse_data_il5tg <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_eos_annotation.rds"))
 
 ##### For each dataset generate a dataframe with the median of gene counts per subtype 
 ### mouse_data_il5tg
@@ -37,10 +35,10 @@ p <- ggplot(df, aes(x = reorder(celltype, median_nFeature, FUN = median), y =  m
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   scale_fill_manual(values = c("active" = "#E81818", "circulating" = "#EDE20F","basal" = "#10A069", "immature" = "#E88A1A",
                                "progenitor" = "#26DFED"))
-ggsave("/scratch/khandl/technical/figures/gene_counts_across_datasets/eos_subtype_il5tg.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(gene_counts_plots_dir, "eos_subtype_il5tg.svg"), width = 8, height = 8, plot = p)
 
 ## statistical test --> one way ANOVA 
-anova <- aov(median_nFeature ~ celltype, data = df_mouse_data_il5tg)
+anova <- aov(median_nFeature ~ celltype, data = df)
 summary(anova)
 TukeyHSD(anova)
 

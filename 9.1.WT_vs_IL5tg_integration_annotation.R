@@ -1,17 +1,15 @@
 ########### This code integrates eosinophils from WT and Il5-tg mice, colon and BM ##########
 ### Datasets used: GSE182001, GSE282765
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### Link to libraries and functions
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.1.Packages.R")
-source("~/Projects/Guidelines_scRNAseq_analysis_eosinophils/1.7.Functions_cell_type_prop.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
+source(file.path(base_dir, "1.7.Functions_cell_type_prop.R"))
 
 ##### Load Seurat objects
-il5tg <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
-wt_bm <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
-wt_colon <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
+il5tg <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds"))
+wt_bm <- readRDS(file.path(seurat_objects_dir,"Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds"))
+wt_colon <- readRDS(file.path(seurat_objects_dir,"Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
 ### Extract BM and colon 
 Idents(wt_bm) <- "condition"
@@ -33,7 +31,7 @@ obj <- merge(wt_bm, y= c(wt_colon,il5tg))
 DefaultAssay(obj) <- "RNA"
 obj <- JoinLayers(obj)
 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/Il5tg_wt_eos.rds" )
+saveRDS(obj, file.path(seurat_objects_dir, "Il5tg_wt_eos.rds") )
 
 current.cluster.ids <- c("adult_colon_wt","bm","bm_wt","colon")
 new.cluster.ids <- c("wt","il5tg","wt","il5tg")
@@ -44,7 +42,7 @@ new.cluster.ids <- c("colon","bm","bm","colon")
 obj$tissue <- plyr::mapvalues(x = obj$condition, from = current.cluster.ids, to = new.cluster.ids)
 
 ##### pre-processing
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1,assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose = FALSE)
@@ -52,15 +50,15 @@ obj <- RunPCA(obj, features = VariableFeatures(object =obj), npcs = 20, verbose 
 obj <- FindNeighbors(obj, reduction = "pca", dims = 1:15)
 obj <- FindClusters(obj, resolution = 0.8, algorithm = 2)
 obj <- RunUMAP(obj, reduction = "pca", dims = 1:15, reduction.name = "umap")
-DimPlot(obj,reduction = "umap",raster=FALSE, label= TRUE, label.size = 8)
-DimPlot(obj,reduction = "umap",raster=FALSE, label= TRUE, label.size = 8,group.by = "condition")
-DimPlot(obj,reduction = "umap",raster=FALSE, label= TRUE, label.size = 8,group.by = "genotype")
+DimPlot(obj,reduction = "umap", label= TRUE, label.size = 8)
+DimPlot(obj,reduction = "umap", label= TRUE, label.size = 8,group.by = "condition")
+DimPlot(obj,reduction = "umap", label= TRUE, label.size = 8,group.by = "genotype")
 
 obj <- JoinLayers(obj)
 
 #### FastMNN integration 
 obj[["RNA"]] <- split(obj[["RNA"]], f = obj$genotype)
-obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
+obj <- NormalizeData(obj,normalization.method = "LogNormalize", scale.factor = 10000, margin = 1, assay = "RNA")
 obj <- FindVariableFeatures(obj)
 obj <- ScaleData(obj,vars.to.regress = c("nFeature_RNA","nCount_RNA","percent.mt"))
 
@@ -74,7 +72,7 @@ DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label = TRUE, labe
 DimPlot(obj,reduction = "umap.mnn",group.by = "genotype", label = TRUE, label.size = 10)
 DimPlot(obj,reduction = "umap.mnn",group.by = "condition", label = TRUE, label.size = 10)
 
-DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters",raster=FALSE, label= TRUE, label.size = 8, split.by = "condition")
+DimPlot(obj,reduction = "umap.mnn",group.by = "mnn.clusters", label= TRUE, label.size = 8, split.by = "condition")
 
 ## check quality of clusters
 VlnPlot(obj, features = "nFeature_RNA")
@@ -84,7 +82,7 @@ Idents(obj) <- "mnn.clusters"
 obj <- subset(obj, idents = c(0:7,9:11))
 
 p <- DimPlot(obj, group.by = "tissue", reduction = "umap.mnn", label = TRUE, split.by = "genotype", cols = c("#26DFED","#E81818" )) 
-ggsave("/scratch/khandl/technical/figures/wt_il5tg/umap_split_genotype_group_tissue.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(wt_il5tg_plots_dir, "umap_split_genotype_group_tissue.svg"), width = 10, height = 8, plot = p)
 
 ### DotPlot of marker genes
 goi <- c("Mki67","Tuba1b", "Epx","Prg3", #progenitor
@@ -102,14 +100,13 @@ DotPlot(obj, features = goi,dot.scale = 10, scale = TRUE, assay = "RNA",cols = c
 current.cluster.ids <- c(0:7,9:11)
 new.cluster.ids <- c("active","active","active","active" ,"active","precursor","basal","basal","immature","immature","precursor")
 obj$annotation <- plyr::mapvalues(x = obj$mnn.clusters, from = current.cluster.ids, to = new.cluster.ids)
-DimPlot(obj, group.by = "annotation", label = TRUE,raster=FALSE,reduction = "umap.mnn", split.by = "tissue")
+DimPlot(obj, group.by = "annotation", label = TRUE,reduction = "umap.mnn", split.by = "tissue")
 obj_save <- obj
 
 ### DEGs per annotation cluster 
 obj <- JoinLayers(obj)
-obj <- NormalizeData(obj, normalization.method = "LogNormalize", scale.factor = 10000,margin = 1, assay = "RNA")
 Idents(obj) <- "annotation"
-markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", slot = "data")
+markers <- FindAllMarkers(object = obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "RNA", layer = "data")
 View(markers %>% group_by(cluster) %>% top_n(n =20, wt = avg_log2FC))
 
 obj$anno_cond <- paste0(obj$annotation, "_",obj$genotype)
@@ -119,14 +116,14 @@ Idents(obj) <- "anno_cond"
 p <- DotPlot(obj, features = goi,dot.scale = 10, scale = TRUE, assay = "RNA",cols = c("white","darkred")) + 
   theme(legend.title = element_text(size = 20), legend.text = element_text(size = 20)) + 
   theme(title = element_text(size = 20))+ theme(axis.text = element_text(size = 10)) + theme(axis.text.x = element_text(angle = 90)) 
-ggsave("/scratch/khandl/technical/figures/wt_il5tg/Dotplot_annotation_marker_per_genotype.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(wt_il5tg_plots_dir, "Dotplot_annotation_marker_per_genotype.svg"), width = 10, height = 8, plot = p)
 
 p <- DimPlot(obj, group.by = "annotation", reduction = "umap.mnn", label = TRUE, split.by = "genotype", cols = c("#E81818" ,"#26DFED","#10A069","#E88A1A" )) 
-ggsave("/scratch/khandl/technical/figures/wt_il5tg/umap_split_genotype_group_annotation.svg", width = 10, height = 8, plot = p)
+ggsave(file.path(wt_il5tg_plots_dir, "umap_split_genotype_group_annotation.svg"), width = 10, height = 8, plot = p)
 
 ##### Subtype proportions per genotype
-create_table_cell_type_prop(obj, "condition","annotation","/scratch/khandl/technical/figures/wt_il5tg/","condition")
-df <- read.csv("/scratch/khandl/technical/figures/wt_il5tg/condition_proportions_condition_annotation.csv", header = TRUE)
+create_table_cell_type_prop(obj, "condition","annotation",file.path(wt_il5tg_tables_dir, ""),"condition")
+df <- read.csv(file.path(wt_il5tg_tables_dir, "condition_proportions_condition_annotation.csv"), header = TRUE)
 
 df_plotting <- create_table_cell_type_prop_table_for_plot(df,c(2,3,4,6)) 
 
@@ -141,7 +138,7 @@ p <- ggplot(data=df_plotting, aes(x=sample, y=proportion, fill = cell_types)) +
   scale_y_continuous(limits = c(0, 1.0), breaks = seq(0, 1.0, by = 0.2)) +
   scale_fill_manual(values=  c("#26DFED","#E88A1A", "#10A069","#E81818" )) + coord_flip() + 
   theme_classic(base_size = 25) 
-ggsave("/scratch/khandl/technical/figures/wt_il5tg/cell_type_prop.svg", width = 12, height = 6, plot = p)
+ggsave(file.path(wt_il5tg_plots_dir, "cell_type_prop.svg"), width = 12, height = 6, plot = p)
 
 ##### QC between il5-tg and wt 
 obj$tissue_cond <- paste0(obj$tissue, "_",obj$genotype)
@@ -149,14 +146,14 @@ p <- VlnPlot(obj, features= "nFeature_RNA", group.by = "tissue_cond", pt.size = 
   theme_classic() + theme(text = element_text(size=20, colour = "black")) + RotatedAxis()  +  
   scale_x_discrete(limits =c("bm_il5tg", "bm_wt","colon_il5tg","colon_wt"))
 print(p)
-ggsave("/scratch/khandl/technical/figures/wt_il5tg/nFeature.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(wt_il5tg_plots_dir, "nFeature.svg"), width = 8, height = 8, plot = p)
 
 p <- VlnPlot(obj, features= "percent.mt", group.by = "tissue_cond", pt.size = 0, cols = c("#26DFED","#6DA0D5" ,"#E81818", "#6D0A16" ) )+  
   theme_classic() + theme(text = element_text(size=20, colour = "black")) + RotatedAxis()  +  
   scale_x_discrete(limits =c("bm_il5tg", "bm_wt" ,"colon_il5tg","colon_wt"))
 print(p)
-ggsave("/scratch/khandl/technical/figures/wt_il5tg/percent.mt.svg", width = 8, height = 8, plot = p)
+ggsave(file.path(wt_il5tg_plots_dir, "percent.mt.svg"), width = 8, height = 8, plot = p)
 
 ##### Save object 
-saveRDS(obj, "/scratch/khandl/technical/seurat_objects/wt_il5tg_bm_colon_annotated.rds")
+saveRDS(obj, file.path(seurat_objects_dir, "wt_il5tg_bm_colon_annotated.rds"))
 

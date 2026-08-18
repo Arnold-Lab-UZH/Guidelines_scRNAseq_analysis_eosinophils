@@ -1,25 +1,23 @@
 ########### This code calculates the gene dropout rate across cell types  ##########
 ### Datasets used: GSE256088, GSE175930, E-MTAB-14010, GSM7919060, GSE276583, GSE216189, GSE282765, GSE182001
 
-##### Set up environment 
-setwd("/home/khandl")
-
 ##### link to libraries and functions
-source("~/Projects/Technical/1.1.Packages.R")
+source("0.config.R")
+source(file.path(base_dir, "1.1.Packages.R"))
 
 ##### Load R objects 
-In_house_data1 <- readRDS("/scratch/khandl/technical/seurat_objects/Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data2 <- readRDS("/scratch/khandl/4.Technical/Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data3 <- readRDS("/scratch/khandl/4.Technical/Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data4 <- readRDS("/scratch/khandl/technical/seurat_objects/Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds")
-In_house_data5 <- readRDS("/scratch/khandl/4.Technical/Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds")
+In_house_data1 <- readRDS(file.path(seurat_objects_dir,"Hs_tumor_NAT_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data2 <- readRDS(file.path(seurat_objects_dir,"Hs_PB_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data3 <- readRDS(file.path(seurat_objects_dir,"Mm_tumor_colon_NAT_diss_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data4 <- readRDS(file.path(seurat_objects_dir,"Mm_blood_bm_tumor_healthy_forced_cell_determination_with_intronic_reads_annotated.rds"))
+In_house_data5 <- readRDS(file.path(seurat_objects_dir,"Mm_il5tg_steady_state_forced_cell_determination_with_intronic_reads_annotated.rds"))
 
-Public_data1 <- readRDS("/scratch/khandl/4.Technical/Hs_blood_GSE256088_et_al_anno.rds")
-Public_data2 <- readRDS("/scratch/khandl/4.Technical/Hs_blood_E-MTAB-14010_anno.rds")
-Public_data3 <- readRDS("/scratch/khandl/4.Technical/Mm_bm_GSM7919060_anno.rds")
-Public_data4 <- readRDS("/scratch/khandl/4.Technical/Hs_blood_GSE276583_anno.rds")
-Public_data5 <- readRDS("/scratch/khandl/4.Technical/Mm_liver_GSE216189.rds")
-Public_data6 <- readRDS("/scratch/khandl/4.Technical/Hs_esophagus_duodenum_EoE_GSE175930_anno.rds")
+Public_data1 <- readRDS(file.path(seurat_objects_dir,"Hs_blood_GSE256088_et_al_anno.rds"))
+Public_data2 <- readRDS(file.path(seurat_objects_dir,"Hs_blood_E-MTAB-14010_anno.rds"))
+Public_data3 <- readRDS(file.path(seurat_objects_dir,"Mm_bm_GSM7919060_anno.rds"))
+Public_data4 <- readRDS(file.path(seurat_objects_dir,"Hs_blood_GSE276583_anno.rds"))
+Public_data5 <- readRDS(file.path(seurat_objects_dir,"Mm_liver_GSE216189.rds"))
+Public_data6 <- readRDS(file.path(seurat_objects_dir,"Hs_esophagus_duodenum_EoE_GSE175930_anno.rds"))
 
 ##### Remove ? and lowQ and mixed cells 
 Idents(In_house_data1) <- "annotation"
@@ -581,7 +579,7 @@ p <- ggplot(df, aes(x = reorder(celltype, median_dropout, FUN = median), y =  me
                                 "Hepatocytes"="#EF670A","Kupffer"="#2F5B36", "Macrophages" = "#82C341","Mast" = "#7F7F79", 
                                 "HSCs" = "#EFE9BF","Monocytes" = "#ADD8AB", "Neutrophils" = "#9518ED",  "PCs" = "#B4C108",
                                 "ProMono"="#D2EFD0", "ProNeutro" = "#D9C1E8", "T" = "#5BC7D9",   "TAMs" = "#516D38", "Stellate"="#877864"))
-ggsave("/scratch/khandl/technical/figures/Dropouts/all.svg", width = 20, height = 8, plot = p)
+ggsave(file.path(dropout_plots_dir, "all.svg"), width = 20, height = 8, plot = p)
 
 ## Statistical test --> one way ANOVA 
 anova <- aov(median_dropout ~ celltype, data = df)
